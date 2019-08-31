@@ -1,19 +1,21 @@
-import ServerInteractor from './lib/javascript/ServerInteractor'
+import ServerInteractor from './lib/javascript/ServerInteractor.js'
 
 class CrimsonApplication {
     constructor(root) {
-        this.uri = root.src;
+        this.uri = root.attributes.src.value;
         this.root = root;
         this.objects = {};
         this.serverInteractor = new ServerInteractor(this.uri);
     }
 }
 
-crimsonApplications = []
+let crimsonApplications = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     let applications = document.getElementsByTagName('crimson');
-    applications.forEach(function(application) {
+
+    for(let i = 0; i < applications.length; i++) {
+        let application = applications[i];
         crimsonApplications.push( new CrimsonApplication(application) );
-    });
+    }
 });
