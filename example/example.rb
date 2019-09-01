@@ -2,7 +2,10 @@
 
 require 'thin'
 require 'sinatra/base'
-require_relative '../lib/ruby/base'
+require_relative '../crimson'
+
+# run Crimson manually in the event machine
+Crimson.run = false
 
 class WebServer < Sinatra::Base
   set :public_folder, "#{__dir__}/../"
@@ -11,11 +14,11 @@ class WebServer < Sinatra::Base
   end
 end
 
-puts 'Server started at http://localhost:9000'
+object = Crimson::Data.new value: "Hello World"
 
+puts 'Server started at http://localhost:9000'
 EM.run do
   websrv = WebServer.new
-  app = Crimson::Application.new
-  app.start_server
+  Crimson::Application.instance.start
   Thin::Server.start(websrv, '0.0.0.0', 9000, signals: false)
 end
