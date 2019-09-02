@@ -24,8 +24,15 @@ module Crimson
       creator.create(self)
     end
 
+    def parent=(parent)
+      @parent.remove_child(self)
+      @parent = parent
+      @parent.add_child(self)
+      updater.update(id, parent: parent.id)
+    end
+
     def destroy
-      destroyer.destroy(self)
+      destroyer.destroy(id)
     end
 
     def on(*events, &block)
@@ -108,8 +115,11 @@ module Crimson
 
     def destroy
       @parent&.remove_child(self)
+      @parent = nil
+      
       @children.each_value(&:destroy)
       @children.clear
+      
       super
     end
 

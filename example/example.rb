@@ -23,7 +23,6 @@ button = Crimson::Button.new 'MyButton'
 button.on(:click) { checkbox.toggle }
 
 textfield = Crimson::TextField.new placeholder: "Hello World", value: "Yes"
-textfield.on(:keypress) { |meta| textfield.value = meta["value"] if meta["event"]["key"] == "Enter" }
 
 Crimson::Radio.new
 Crimson::Radio.new
@@ -32,6 +31,23 @@ Crimson::Radio.new
 
 dropdown = Crimson::Dropdown.new("I", "like", "pie", "yes")
 dropdown.on(:change) { |meta| dropdown.selected = meta["value"] }
+
+list = Crimson::List.new(
+  Crimson::Text.new("item1"),
+  Crimson::Text.new("item2"),
+  Crimson::Text.new("item3"),
+)
+
+textfield.on(:keypress) { |meta|
+  if meta["event"]["key"] == "Enter"
+    textfield.value = meta["value"]
+    list.add_item Crimson::Text.new(textfield.value)
+  end
+}
+
+button.on(:click) { |meta|
+  list.remove_item list.first unless list.empty?
+}
 
 puts 'Server started at http://localhost:9000'
 EM.run do

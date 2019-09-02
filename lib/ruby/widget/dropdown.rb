@@ -14,10 +14,7 @@ module Crimson
       options.each { |option| add_option option }
       
       @selected = options.first
-      on(:change) { |meta|
-        @selected = value
-      }
-
+      
       meta.push("value")
       updater.update(id, meta: meta)
     end
