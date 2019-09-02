@@ -8,14 +8,16 @@ module Crimson
   class Object
     include Wisper::Publisher
 
-    attr_reader :id
+    attr_reader :id, :parent, :tag
     @@id_count = 1
 
-    def initialize(&before_create)
+    def initialize(parent: app.root, tag: 'div')
       @id = "crimson-#{app.name}-#{@@id_count}"
       @@id_count += 1
       @events = []
-      before_create.call
+      @tag = tag
+      @parent = parent
+      @parent&.add_child(self)
       creator.create(self)
     end
 
@@ -46,10 +48,13 @@ module Crimson
     end
 
     def to_msg
-      {
+      msg = {
         id: id,
+        tag: tag,
         events: @events.map(&:to_s)
       }
+      msg.merge!(parent: @parent.id) if @parent
+      msg
     end
 
     def ==(object)
@@ -80,13 +85,11 @@ module Crimson
   end
 
   class Widget < Object
-    attr_reader :children, :parent
+    attr_reader :children
 
     def initialize(parent: app.root, tag: 'div')
-      @parent = parent
-      @tag = tag
       @children = {}
-      super() { @parent&.add_child(self) }
+      super(parent: parent, tag: tag)
     end
 
     def add_child(child)
@@ -105,9 +108,7 @@ module Crimson
     end
 
     def to_msg
-      msg = super.merge(tag: @tag, children: @children.values.map(&:to_msg))
-      msg.merge!(parent: @parent.id) if @parent
-      msg
+      super.merge(children: @children.values.map(&:to_msg))
     end
   end
 
@@ -115,16 +116,12 @@ module Crimson
     attr_reader :value
 
     def initialize(parent: app.root, value: '')
-      @parent = parent
-      @tag = 'div'
       @value = value
-      super() { @parent&.add_child(self) }
+      super(parent: parent)
     end
 
     def to_msg
-      msg = super.merge(tag: @tag, value: @value)
-      msg.merge!(parent: @parent.id) if @parent
-      msg
+      super.merge(value: @value)
     end
 
     def destroy
