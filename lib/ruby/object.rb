@@ -1,30 +1,53 @@
 # frozen_string_literal: true
 
+require 'wisper'
 require_relative 'base'
 require_relative 'object'
-require_relative 'creater'
-require_relative 'updater'
-require_relative 'destroyer'
 
 module Crimson
   class Object
+    include Wisper::Publisher
+
     attr_reader :id
     @@id_count = 1
 
     def initialize
       @id = "crimson-#{app.name}-#{@@id_count}"
       @@id_count += 1
-
-      creater.create(self)
+      @events = []
+      creator.create(self)
     end
 
     def destroy
       destroyer.destroy(self)
     end
 
+    def on(*events, &block)
+      @events |= events
+      updater.update(id, events: @events.map(&:to_s))
+
+      super(*events, &block)
+    end
+
+    def subscribe(listener, options = {})
+      @events |= if options.key?(:on)
+                   options[:on]
+                 else
+                   listener.public_instance_methods(false)
+                 end
+      updater.update(id, events: @events.map(&:to_s))
+
+      super(listener, options)
+    end
+
+    def notify(event)
+      broadcast(event)
+    end
+
     def to_msg
       {
-        id: id
+        id: id,
+        events: @events.map(&:to_s)
       }
     end
 
@@ -38,8 +61,8 @@ module Crimson
       Crimson::Application.instance
     end
 
-    def creater
-      app.creater
+    def creator
+      app.creator
     end
 
     def updater
@@ -48,6 +71,10 @@ module Crimson
 
     def destroyer
       app.destroyer
+    end
+
+    def notifier
+      app.notifier
     end
   end
 
@@ -107,6 +134,11 @@ module Crimson
 
     def destroy
       super
+    end
+
+    def value=(val)
+      @value = val
+      updater.update(id, value: @value)
     end
   end
 end

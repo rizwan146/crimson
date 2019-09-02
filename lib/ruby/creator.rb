@@ -1,22 +1,22 @@
+# frozen_string_literal: true
+
 require_relative 'base'
 
 module Crimson
-  class Creater
-    def initiallize()
-
-    end
+  class Creator
+    def initiallize; end
 
     def create(object, clients: app.clients)
       raise TypeError unless object.is_a?(Crimson::Object)
-      
+
       app.objects[object.id] = object
 
       return if clients.empty?
-      
-      message = object.to_msg.merge({
-        action: "create"
-      }).to_json
-      
+
+      message = object.to_msg.merge(
+        action: 'create'
+      ).to_json
+
       clients.each { |client| client.send(message) }
     end
 

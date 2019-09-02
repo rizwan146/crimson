@@ -27,11 +27,15 @@ module Crimson
     def on_open(*args)
       puts "Client #{id} connected."
       app.add_client(self)
-      app.creater.create(app.root, clients: [self])
+      app.creator.create(app.root, clients: [self])
     end
 
     def on_message(msg, _type)
       puts "Client #{id} Received message: #{msg}."
+      msg = JSON.parse(msg)
+      case msg["action"]
+      when 'notify' then app.notifier.notify(msg)
+      end
     end
 
     def on_close(*args)
