@@ -49,6 +49,8 @@ button.on(:click) { |meta|
   list.remove_item list.first unless list.empty?
 }
 
+Crimson::Image.new("https://images.template.net/wp-content/uploads/2016/04/26122303/Cool-Lion-Colorful-Art.jpg")
+
 puts 'Server started at http://localhost:9000'
 EM.run do
   websrv = WebServer.new
