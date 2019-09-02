@@ -8,13 +8,15 @@ module Crimson
   class Object
     include Wisper::Publisher
 
-    attr_reader :id, :parent, :tag
+    attr_reader :id, :parent, :tag, :attributes, :style, :events
     @@id_count = 1
 
     def initialize(parent: app.root, tag: 'div')
       @id = "crimson-#{app.name}-#{@@id_count}"
       @@id_count += 1
       @events = []
+      @style = {}
+      @attributes = {}
       @tag = tag
       @parent = parent
       @parent&.add_child(self)
@@ -51,9 +53,11 @@ module Crimson
       msg = {
         id: id,
         tag: tag,
-        events: @events.map(&:to_s)
+        attributes: attributes,
+        style: style,
+        events: events.map(&:to_s)
       }
-      msg.merge!(parent: @parent.id) if @parent
+      msg.merge!(parent: parent.id) if parent
       msg
     end
 
@@ -130,7 +134,7 @@ module Crimson
 
     def value=(val)
       @value = val
-      updater.update(id, value: @value)
+      updater.update(id, value: value)
     end
   end
 end

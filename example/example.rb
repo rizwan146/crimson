@@ -16,9 +16,9 @@ end
 
 text1 = Crimson::Text.new "Hello World"
 text2 = Crimson::Text.new "Hello World2"
-
+checkbox = Crimson::Checkbox.new checked: true
 button = Crimson::Button.new 'MyButton'
-button.on(:click) { Crimson::Text.new "Hello World" }
+button.on(:click) { checkbox.toggle }
 
 puts 'Server started at http://localhost:9000'
 EM.run do
