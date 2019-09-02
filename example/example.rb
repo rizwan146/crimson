@@ -30,6 +30,9 @@ Crimson::Radio.new
 Crimson::Radio.new
 Crimson::Radio.new
 
+dropdown = Crimson::Dropdown.new("I", "like", "pie", "yes")
+dropdown.on(:change) { |meta| dropdown.selected = meta["value"] }
+
 puts 'Server started at http://localhost:9000'
 EM.run do
   websrv = WebServer.new

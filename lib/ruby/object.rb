@@ -121,9 +121,9 @@ module Crimson
   class Data < Object
     attr_reader :value
 
-    def initialize(parent: app.root, value: '')
+    def initialize(parent: app.root, value: '', tag: 'div')
       @value = value
-      super(parent: parent)
+      super(parent: parent, tag: tag)
     end
 
     def to_msg
