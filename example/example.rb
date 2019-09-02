@@ -14,7 +14,11 @@ class WebServer < Sinatra::Base
   end
 end
 
-object = Crimson::Data.new value: "Hello World"
+text1 = Crimson::Text.new "Hello World"
+text2 = Crimson::Text.new "Hello World2"
+
+button = Crimson::Button.new 'MyButton'
+button.on(:click) { text1.value += "!!!" }
 
 puts 'Server started at http://localhost:9000'
 EM.run do

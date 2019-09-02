@@ -5,4 +5,4 @@ Implementation in progress..
 run ruby example/example.rb
 
 Required gems:
-sinatra websocket-eventmachine-server
+thin sinatra websocket-eventmachine-server wisper
