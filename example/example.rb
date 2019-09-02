@@ -18,7 +18,7 @@ text1 = Crimson::Text.new "Hello World"
 text2 = Crimson::Text.new "Hello World2"
 
 button = Crimson::Button.new 'MyButton'
-button.on(:click) { text1.value += "!!!" }
+button.on(:click) { Crimson::Text.new "Hello World" }
 
 puts 'Server started at http://localhost:9000'
 EM.run do

@@ -11,10 +11,11 @@ module Crimson
     attr_reader :id
     @@id_count = 1
 
-    def initialize
+    def initialize(&before_create)
       @id = "crimson-#{app.name}-#{@@id_count}"
       @@id_count += 1
       @events = []
+      before_create.call
       creator.create(self)
     end
 
@@ -82,13 +83,10 @@ module Crimson
     attr_reader :children, :parent
 
     def initialize(parent: app.root, tag: 'div')
-      super()
-
       @parent = parent
-      @parent&.add_child(self)
-
       @tag = tag
       @children = {}
+      super() { @parent&.add_child(self) }
     end
 
     def add_child(child)
@@ -117,13 +115,10 @@ module Crimson
     attr_reader :value
 
     def initialize(parent: app.root, value: '')
-      super()
-
       @parent = parent
-      @parent&.add_child(self)
-
       @tag = 'div'
       @value = value
+      super() { @parent&.add_child(self) }
     end
 
     def to_msg
