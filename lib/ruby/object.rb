@@ -8,7 +8,7 @@ module Crimson
   class Object
     include Wisper::Publisher
 
-    attr_reader :id, :parent, :tag, :attributes, :style, :events
+    attr_reader :id, :parent, :tag, :attributes, :style, :events, :meta
     @@id_count = 1
 
     def initialize(parent: app.root, tag: 'div')
@@ -17,6 +17,7 @@ module Crimson
       @events = []
       @style = {}
       @attributes = {}
+      @meta = []
       @tag = tag
       @parent = parent
       @parent&.add_child(self)
@@ -55,6 +56,7 @@ module Crimson
         tag: tag,
         attributes: attributes,
         style: style,
+        meta: meta,
         events: events.map(&:to_s)
       }
       msg.merge!(parent: parent.id) if parent

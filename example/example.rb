@@ -23,7 +23,12 @@ button = Crimson::Button.new 'MyButton'
 button.on(:click) { checkbox.toggle }
 
 textfield = Crimson::TextField.new placeholder: "Hello World", value: "Yes"
-textfield.on(:keypress) { |meta| textfield.value = meta["value"] if meta["key"] == 13 }
+textfield.on(:keypress) { |meta| textfield.value = meta["value"] if meta["event"]["key"] == "Enter" }
+
+Crimson::Radio.new
+Crimson::Radio.new
+Crimson::Radio.new
+Crimson::Radio.new
 
 puts 'Server started at http://localhost:9000'
 EM.run do

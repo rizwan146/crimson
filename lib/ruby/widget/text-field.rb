@@ -12,7 +12,9 @@ module Crimson
         placeholder: placeholder
       )
 
-      updater.update(id, attributes: attributes)
+      meta.push("value")
+      
+      updater.update(id, attributes: attributes, meta: meta)
     end
 
     def value
