@@ -9,7 +9,7 @@ module Crimson
 
     def notify(msg)
       object = app.objects[msg["id"]]
-      object.notify(msg["event"].to_sym)
+      object.notify(msg["event"].to_sym, msg["meta"])
     end
 
     def app

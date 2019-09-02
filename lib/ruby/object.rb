@@ -45,8 +45,8 @@ module Crimson
       super(listener, options)
     end
 
-    def notify(event)
-      broadcast(event)
+    def notify(event, meta)
+      broadcast(event, meta)
     end
 
     def to_msg

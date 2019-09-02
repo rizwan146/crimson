@@ -16,9 +16,14 @@ end
 
 text1 = Crimson::Text.new "Hello World"
 text2 = Crimson::Text.new "Hello World2"
+
 checkbox = Crimson::Checkbox.new checked: true
+
 button = Crimson::Button.new 'MyButton'
 button.on(:click) { checkbox.toggle }
+
+textfield = Crimson::TextField.new placeholder: "Hello World", value: "Yes"
+textfield.on(:keypress) { |meta| textfield.value = meta["value"] if meta["key"] == 13 }
 
 puts 'Server started at http://localhost:9000'
 EM.run do
