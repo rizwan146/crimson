@@ -2,23 +2,48 @@
 
 require 'websocket-eventmachine-server'
 require 'singleton'
+require 'webview'
+require 'sinatra'
+require 'thin'
+
 require_relative 'creator'
 require_relative 'updater'
 require_relative 'destroyer'
 require_relative 'object'
 require_relative 'notifier'
 require_relative 'client-interactor'
+require_relative 'webserver'
 
 module Crimson
   class Application
     include Singleton
-    attr_accessor :name, :host, :port
+    attr_accessor :name, :webserver_host, :webserver_port, :websocket_host, :websocket_port
+    attr_accessor :width, :height, :resizable
     attr_reader :clients, :objects, :creator, :updater, :destroyer, :notifier
+    attr_reader :webview
 
-    def initialize(name: 'myapp', host: '0.0.0.0', port: 10_000)
+    def initialize(
+        name: 'myapp',
+        webserver_host: '0.0.0.0',
+        webserver_port: 9_000,
+        websocket_host: '0.0.0.0',
+        websocket_port: 10_000,
+        width: 800,
+        height: 600,
+        resizable: true
+      )
+      
       @name = name
-      @host = host
-      @port = port
+      
+      @webserver_host = webserver_host
+      @webserver_port = webserver_port
+      
+      @websocket_host = websocket_host
+      @websocket_port = websocket_port
+
+      @width = width
+      @height = height
+      @resizable = resizable
 
       @creator = Crimson::Creator.new
       @updater = Crimson::Updater.new
@@ -45,15 +70,32 @@ module Crimson
       @root
     end
 
-    def run
+    def run(websocket_enabled: true, webserver_enabled: true, webview_enabled: true)
       EM.run do
-        start
+        start_websocket if websocket_enabled
+        start_webserver if webserver_enabled
+        start_webview if webview_enabled
       end
     end
 
-    def start
+    def start_webview
+      @webview = Webview::App.new(
+        title: name,
+        width: width,
+        height: height,
+        resizable: resizable
+      )
+      @webview.open("http://#{webserver_host}:#{webserver_port}")
+    end
+
+    def start_webserver
+      @webserver = Crimson::WebServer.new
+      Thin::Server.start(@webserver, webserver_host, webserver_port, signals: false)
+    end
+
+    def start_websocket
       WebSocket::EventMachine::Server
-        .start(host: @host, port: @port) { |ws| Crimson::ClientInteractor.new(ws) }
+        .start(host: websocket_host, port: websocket_port) { |ws| Crimson::ClientInteractor.new(ws) }
     end
   end
 end
