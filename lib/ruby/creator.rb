@@ -6,7 +6,7 @@ module Crimson
   class Creator
     def initiallize; end
 
-    def create(object, clients: app.clients)
+    def create(object, clients = app.clients)
       raise TypeError unless object.is_a?(Crimson::Object)
 
       app.objects[object.id] = object

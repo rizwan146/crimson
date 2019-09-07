@@ -5,13 +5,13 @@ module Crimson
 
     end
 
-    def destroy(id)
+    def destroy(id, clients = app.clients)
       message = {
         id: id,
         action: 'destroy'
       }.to_json
 
-      app.clients.each { |client| client.send(message) }
+      clients.each { |client| client.send(message) }
     end
 
     def app
