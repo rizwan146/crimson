@@ -9,9 +9,17 @@ require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
 
 module Crimson
-  @@webserver_enabled = true
+  @@webserver_enabled = false
   @@websocket_enabled = true
-  @@webview_enabled = true
+  @@webview_enabled = false
+
+  def self.logger
+    Crimson::Application.instance.logger
+  end
+
+  def self.logger=(logger)
+    Crimson::Application.instance.logger = logger
+  end
 
   def self.name
     Crimson::Application.instance.name

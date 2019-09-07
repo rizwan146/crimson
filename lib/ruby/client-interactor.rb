@@ -20,18 +20,18 @@ module Crimson
     end
 
     def send(message)
-      puts "Client #{id} Sending message: #{message}."
+      app.logger.debug "[ClientInteractor] Sending to #{id}, message: #{message}."
       @socket.send(message)
     end
 
     def on_open(*args)
-      puts "Client #{id} connected."
+      app.logger.debug "[ClientInteractor] #{id} connected."
       app.add_client(self)
       app.creator.create(app.root, clients: [self])
     end
 
     def on_message(msg, _type)
-      puts "Client #{id} Received message: #{msg}."
+      app.logger.debug "[ClientInteractor] Received from #{id}, message: #{msg}."
       msg = JSON.parse(msg)
       case msg["action"]
       when 'notify' then app.notifier.notify(msg)
@@ -39,7 +39,7 @@ module Crimson
     end
 
     def on_close(*args)
-      puts "Client #{id} disconnected."
+      app.logger.debug "[ClientInteractor] #{id} disconnected."
       app.remove_client(self)
     end
 
