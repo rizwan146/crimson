@@ -2,7 +2,7 @@
 
 require 'websocket-eventmachine-server'
 require 'singleton'
-require 'webview'
+# require 'webview'
 require 'sinatra'
 require 'thin'
 
@@ -79,13 +79,13 @@ module Crimson
     end
 
     def start_webview
-      @webview = Webview::App.new(
-        title: name,
-        width: width,
-        height: height,
-        resizable: resizable
-      )
-      @webview.open("http://#{webserver_host}:#{webserver_port}")
+      # @webview = Webview::App.new(
+      #   title: name,
+      #   width: width,
+      #   height: height,
+      #   resizable: resizable
+      # )
+      # @webview.open("http://#{webserver_host}:#{webserver_port}")
     end
 
     def start_webserver
