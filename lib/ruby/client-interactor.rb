@@ -27,7 +27,7 @@ module Crimson
     def on_open(*args)
       app.logger.debug "[ClientInteractor] #{id} connected."
       app.add_client(self)
-      app.creator.create(app.root, clients: [self])
+      app.creator.create(app.root, [self])
     end
 
     def on_message(msg, _type)

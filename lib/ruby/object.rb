@@ -95,6 +95,10 @@ module Crimson
     def notifier
       app.notifier
     end
+
+    def invoker
+      app.invoker
+    end
   end
 
   class Widget < Object

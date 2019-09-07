@@ -13,7 +13,7 @@ module Crimson
       super(parent: parent, tag: 'ul')
       @items = []
       @list_items = {}
-      widgets.each { |widget| add_item widget }
+      widgets.each { |widget| append widget }
     end
 
     def empty?
@@ -32,13 +32,13 @@ module Crimson
       app.objects[@items[index]]
     end
 
-    def add_item(widget)
+    def append(widget)
       item = ListItem.new(self, widget)
       @items << widget.id
       @list_items[widget.id] = item
     end
 
-    def remove_item(widget)
+    def delete(widget)
       item = @list_items[widget.id]
       remove_child item
       @items.delete(widget.id)

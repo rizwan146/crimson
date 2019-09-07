@@ -7,13 +7,13 @@ module Crimson
 
     end
 
-    def update(id, args = {})
+    def update(id, args = {}, clients = app.clients)
       message = args.merge(
         id: id,
         action: 'update'
       ).to_json
 
-      app.clients.each { |client| client.send(message) }
+      clients.each { |client| client.send(message) }
     end
 
     def app
