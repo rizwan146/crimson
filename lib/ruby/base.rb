@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
+require 'logger'
 require 'websocket-eventmachine-server'
 require 'singleton'
-# require 'webview'
-require 'sinatra'
 require 'thin'
 
 require_relative 'creator'
@@ -17,6 +16,7 @@ require_relative 'webserver'
 module Crimson
   class Application
     include Singleton
+    attr_accessor :logger
     attr_accessor :name, :webserver_host, :webserver_port, :websocket_host, :websocket_port
     attr_accessor :width, :height, :resizable
     attr_reader :clients, :objects, :creator, :updater, :destroyer, :notifier
@@ -34,6 +34,9 @@ module Crimson
       )
       
       @name = name
+
+      @logger = Logger.new(STDOUT)
+      @logger.level = Logger::WARN
       
       @webserver_host = webserver_host
       @webserver_port = webserver_port

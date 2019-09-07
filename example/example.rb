@@ -2,6 +2,8 @@
 
 require_relative '../crimson'
 
+Crimson.logger.level = Logger::DEBUG
+Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
 text1 = Crimson::Text.new "Hello World"
