@@ -2,8 +2,6 @@
 
 require 'websocket-eventmachine-server'
 require 'singleton'
-# require 'webview'
-require 'sinatra'
 require 'thin'
 
 require_relative 'creator'
