@@ -2,7 +2,6 @@
 
 require 'websocket-eventmachine-server'
 require 'singleton'
-# require 'webview'
 require 'sinatra'
 require 'thin'
 
@@ -13,6 +12,7 @@ require_relative 'object'
 require_relative 'notifier'
 require_relative 'client-interactor'
 require_relative 'webserver'
+require_relative 'webview'
 
 module Crimson
   class Application
@@ -29,8 +29,7 @@ module Crimson
         websocket_host: '0.0.0.0',
         websocket_port: 10_000,
         width: 800,
-        height: 600,
-        resizable: true
+        height: 600
       )
       
       @name = name
@@ -79,13 +78,11 @@ module Crimson
     end
 
     def start_webview
-      # @webview = Webview::App.new(
-      #   title: name,
-      #   width: width,
-      #   height: height,
-      #   resizable: resizable
-      # )
-      # @webview.open("http://#{webserver_host}:#{webserver_port}")
+      @webview = Crimson::WebView.new()
+      @webview.qt.setWindowTitle(name)
+      @webview.qt.resize(width, height)
+      @webview.load("http://#{webserver_host}:#{webserver_port}")
+      @webview.start
     end
 
     def start_webserver
