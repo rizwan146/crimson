@@ -108,6 +108,17 @@ module Crimson
       configuration
     end
 
+    def method_missing(name, *args, &block)
+      begin
+        klass = Object.const_get("Crimson::#{name}")
+        instance = klass.new(*args, parent: self)
+        instance.instance_eval(&block) if block
+        return instance
+      rescue NameError
+        super(name, *args, &block)
+      end
+    end
+
     def to_s
       id.to_s
     end

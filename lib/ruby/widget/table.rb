@@ -4,10 +4,10 @@ require_relative '../object'
 require_relative 'text'
 
 module Crimson
-  class TableColumn < Widget
+  class Column < Widget
     attr_reader :widget
 
-    def initialize(parent, widget)
+    def initialize(widget, parent: app.root)
       super(parent: parent, tag: 'td')
       self.widget = widget
     end
@@ -23,8 +23,8 @@ module Crimson
     end
   end
 
-  class TableRow < Widget
-    def initialize(parent, columns)
+  class Row < Widget
+    def initialize(columns, parent: app.root)
       super(parent: parent, tag: 'tr')
       columns.each { |column| append column }
     end
@@ -32,12 +32,12 @@ module Crimson
     def insert(index, column)
       raise IndexError unless columns[index]
 
-      insert_child(index, TableColumn.new(self, column))
+      insert_child(index, Column.new(self, column))
       columns[index]
     end
 
     def append(column)
-      add_child(TableColumn.new(self, column))
+      Column.new(column, parent: self)
       columns.last
     end
 
@@ -71,12 +71,12 @@ module Crimson
     def insert(index, row)
       raise IndexError unless rows[index]
 
-      insert_child(index, TableRow.new(self, row))
+      insert_child(index, Row.new(self, row))
       rows[index]
     end
 
     def append(row)
-      add_child(TableRow.new(self, row))
+      Row.new(row, parent: self)
       rows.last
     end
 

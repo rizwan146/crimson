@@ -10,6 +10,10 @@ module Crimson
   @@websocket_enabled = true
   @@webview_enabled = false
 
+  def self.Root(&block)
+    Crimson::Application.instance.root.instance_eval(&block)
+  end
+
   def self.logger
     Crimson::Application.instance.logger
   end

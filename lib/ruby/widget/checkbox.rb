@@ -3,10 +3,10 @@ require_relative '../object'
 
 module Crimson
   class Checkbox < Widget
-    def initialize(checked: false, parent: app.root)
+    def initialize(parent: app.root)
       super(parent: parent, tag: 'input')
 
-      attributes.merge!(type: "checkbox", checked: checked)
+      attributes.merge!(type: "checkbox")
       emit update(attributes: attributes)
     end
 
