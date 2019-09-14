@@ -24,38 +24,29 @@ module Crimson
   end
 
   class TableRow < Widget
-    attr_reader :columns
-
     def initialize(parent, columns)
       super(parent: parent, tag: 'tr')
-      @columns = []
       columns.each { |column| append column }
     end
 
     def insert(index, column)
       raise IndexError unless columns[index]
 
-      column_widget = TableColumn.new(self, column)
-      invoker.invoke(
-        id,
-        "insertBefore",
-        [ column_widget.id, columns[index].id ]
-      )
-      columns.insert(index, column_widget)
-
-      column_widget
+      insert_child(index, TableColumn.new(self, column))
+      columns[index]
     end
 
     def append(column)
-      column_widget = TableColumn.new(self, column)
-      columns << column_widget
-      column_widget
+      add_child(TableColumn.new(self, column))
+      columns.last
     end
 
     def delete(column)
-      remove_child column
-      columns.delete(column)
-      column.destroy
+      remove_child(column)
+    end
+
+    def columns
+      children
     end
 
     def [](index)
@@ -72,44 +63,36 @@ module Crimson
   end
 
   class Table < Widget
-    attr_reader :rows
-
     def initialize(*rows, parent: app.root)
       super(parent: parent, tag: 'table')
-      @rows = []
       rows.each { |row| append row }
     end
 
     def insert(index, row)
       raise IndexError unless rows[index]
 
-      row_widget = TableRow.new(self, row)
-      invoker.invoke(
-        id,
-        "insertBefore",
-        [ row_widget.id, rows[index].id ]
-      )
-      rows.insert(index, row_widget)
-
-      row_widget
+      insert_child(index, TableRow.new(self, row))
+      rows[index]
     end
 
     def append(row)
-      row_widget = TableRow.new(self, row)
-      rows << row_widget
-      row_widget
+      add_child(TableRow.new(self, row))
+      rows.last
     end
 
     def delete(row_widget)
-      remove_child row_widget
-      rows.delete(row_widget)
-      row_widget.destroy
+      remove_child(row_widget)
     end
 
-    def [](index)
-      raise IndexError unless rows[index]
+    def rows
+      children
+    end
 
-      rows[index]
+    def [](*args)
+      row, col = *args
+      raise IndexError unless rows[row]
+
+      if col then return children[row][col] else return children[row] end
     end
   end
 end

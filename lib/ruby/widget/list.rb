@@ -2,47 +2,45 @@ require_relative '../object'
 
 module Crimson
   class ListItem < Widget
+    attr_reader :widget
+
     def initialize(parent, widget)
       super(parent: parent, tag: 'li')
       widget.parent = self
+
+      @widget = widget
     end
   end
 
   class List < Widget
     def initialize(*widgets, parent: app.root)
       super(parent: parent, tag: 'ul')
-      @items = []
-      @list_items = {}
-      widgets.each { |widget| append widget }
+      widgets.each { |widget| append(widget) }
     end
 
     def empty?
-      @items.empty?
+      children.empty?
     end
 
     def first
-      app.objects[@items.first]
+      children.first.widget
     end
 
     def last
-      app.objects[@items.last]
+      children.last.widget
     end
 
     def [](index)
-      app.objects[@items[index]]
+      children[index].widget
     end
 
     def append(widget)
-      item = ListItem.new(self, widget)
-      @items << widget.id
-      @list_items[widget.id] = item
+      add_child(ListItem.new(self, widget))
     end
 
     def delete(widget)
-      item = @list_items[widget.id]
-      remove_child item
-      @items.delete(widget.id)
-      item.destroy
+      item = widget.parent
+      remove_child(item)
     end
   end
 end

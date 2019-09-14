@@ -2,9 +2,6 @@
 
 require_relative 'lib/ruby/base'
 require_relative 'lib/ruby/client-interactor'
-require_relative 'lib/ruby/creator'
-require_relative 'lib/ruby/updater'
-require_relative 'lib/ruby/destroyer'
 require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
 

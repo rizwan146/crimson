@@ -12,7 +12,6 @@ text2 = Crimson::Text.new 'Hello World2'
 checkbox = Crimson::Checkbox.new checked: true
 
 button = Crimson::Button.new 'MyButton'
-button.on(:click) { checkbox.toggle }
 
 textfield = Crimson::TextField.new placeholder: 'Hello World', value: 'Yes'
 
@@ -31,13 +30,14 @@ list = Crimson::List.new(
 )
 
 textfield.on(:keypress) do |meta|
-  if meta['event']['key'] == 'Enter'
-    textfield.value = meta['value']
+  if meta[:event][:key] == 'Enter'
+    textfield.value = meta[:value]
     list.append Crimson::Text.new(textfield.value)
   end
 end
 
 button.on(:click) do |_meta|
+  checkbox.toggle
   list.delete list.first unless list.empty?
 end
 
@@ -50,15 +50,15 @@ rowfield = Crimson::TextField.new placeholder: 'Row'
 colfield = Crimson::TextField.new placeholder: 'Col'
 
 valuefield.on(:keyup) do |meta|
-  valuefield.value = meta['value']
+  valuefield.value = meta[:value]
 end
 
 rowfield.on(:keyup) do |meta|
-  rowfield.value = meta['value']
+  rowfield.value = meta[:value]
 end
 
 colfield.on(:keyup) do |meta|
-  colfield.value = meta['value']
+  colfield.value = meta[:value]
 end
 
 table = Crimson::Table.new(

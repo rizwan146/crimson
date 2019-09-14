@@ -5,12 +5,7 @@ require 'websocket-eventmachine-server'
 require 'singleton'
 require 'thin'
 
-require_relative 'creator'
-require_relative 'updater'
-require_relative 'destroyer'
 require_relative 'object'
-require_relative 'notifier'
-require_relative 'invoker'
 require_relative 'client-interactor'
 require_relative 'webserver'
 
@@ -20,7 +15,7 @@ module Crimson
     attr_accessor :logger
     attr_accessor :name, :webserver_host, :webserver_port, :websocket_host, :websocket_port
     attr_accessor :width, :height, :resizable
-    attr_reader :clients, :objects, :creator, :updater, :destroyer, :notifier, :invoker
+    attr_reader :clients, :objects
     attr_reader :webview
 
     def initialize(
@@ -48,12 +43,6 @@ module Crimson
       @width = width
       @height = height
       @resizable = resizable
-
-      @creator = Crimson::Creator.new
-      @updater = Crimson::Updater.new
-      @destroyer = Crimson::Destroyer.new
-      @notifier = Crimson::Notifier.new
-      @invoker = Crimson::Invoker.new
 
       @clients = []
       @objects = {}

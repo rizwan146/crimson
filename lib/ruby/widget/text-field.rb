@@ -14,7 +14,7 @@ module Crimson
 
       meta.push("value")
       
-      updater.update(id, attributes: attributes, meta: meta)
+      emit update(attributes: attributes, meta: meta)
     end
 
     def value
@@ -31,17 +31,17 @@ module Crimson
 
     def value=(text)
       attributes[:value] = text
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
 
     def rows=(val)
       attributes[:rows] = val
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
 
     def cols=(val)
       attributes[:cols] = val
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
   end
 end
