@@ -16,13 +16,13 @@ module Crimson
       @selected = options.first
       
       meta.push("value")
-      updater.update(id, meta: meta)
+      emit update(meta: meta)
     end
 
     def selected=(option)
       raise KeyError unless @options.key?(option)
       @selected = option
-      updater.update(id, attributes: { value: @selected })
+      emit update(attributes: { value: @selected })
     end
 
     def options

@@ -2,23 +2,20 @@ require_relative '../object'
 
 module Crimson
   class TextField < Widget
-    def initialize(value: '', rows: 1, cols: 20, placeholder: '', parent: app.root)
+    def initialize(parent: app.root)
       super(parent: parent, tag: 'textarea')
       
-      attributes.merge!(
-        value: value,
-        rows: rows,
-        cols: cols,
-        placeholder: placeholder
-      )
-
+      attributes.merge!(value: "", placeholder: "", rows: 1, cols: 20)
       meta.push("value")
-      
-      updater.update(id, attributes: attributes, meta: meta)
+      emit update(meta: meta, attributes: attributes)
     end
 
     def value
       attributes[:value]
+    end
+
+    def placeholder
+      attributes[:placeholder]
     end
 
     def rows
@@ -31,17 +28,22 @@ module Crimson
 
     def value=(text)
       attributes[:value] = text
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
+    end
+
+    def placeholder=(text)
+      attributes[:placeholder] = text
+      emit update(attributes: attributes)
     end
 
     def rows=(val)
       attributes[:rows] = val
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
 
     def cols=(val)
       attributes[:cols] = val
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
   end
 end

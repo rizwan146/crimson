@@ -6,7 +6,7 @@ module Crimson
       super(parent: parent, tag: 'input')
 
       attributes.merge!(type: "radio", checked: checked)
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
 
     def checked?
@@ -19,12 +19,12 @@ module Crimson
 
     def check
       attributes[:checked] = true
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
 
     def uncheck
       attributes[:checked] = false
-      updater.update(id, attributes: attributes)
+      emit update(attributes: attributes)
     end
   end
 end

@@ -1,103 +1,134 @@
 # frozen_string_literal: true
 
-require 'wisper'
+require_relative 'publisher'
 require_relative 'base'
 require_relative 'object'
 
 module Crimson
   class Object
-    include Wisper::Publisher
+    include Crimson::Publisher
 
-    attr_reader :id, :parent, :tag, :attributes, :style, :events, :meta
+    public
+
+    attr_reader :id, :parent, :tag, :attributes, :style
+
+    protected
+
+    attr_reader :channel, :subscribers, :events, :meta
+
     @@id_count = 1
 
+    public
+
     def initialize(parent: app.root, tag: 'div')
-      @id = "crimson-#{app.name}-#{@@id_count}"
+      @id = :"crimson_#{app.name}_#{@@id_count}"
       @@id_count += 1
-      @events = []
+
+      @channel = EventMachine::Channel.new
+      @subscribers = {}
+
+      @events = {}
+      @meta = []
+
       @style = {}
       @attributes = {}
-      @meta = []
       @tag = tag
+
       @parent = parent
       @parent&.add_child(self)
-      creator.create(self)
     end
 
     def parent=(parent)
+      # remove self from old parent (will call destroy)
       @parent.remove_child(self)
+
+      # add parent to new child  (will call create)
       @parent = parent
       @parent.add_child(self)
-      updater.update(id, parent: parent.id)
+    end
+
+    def emit(configuration, object: self)
+      configuration = object.send(configuration) if configuration.is_a?(Symbol)
+      channel << [object, configuration]
+    end
+
+    def create
+      configuration.merge(action: :create)
+    end
+
+    def update(changes)
+      changes.merge(action: :update, id: id)
+    end
+
+    def invoke(method, args)
+      {
+        action: :invoke,
+        id: id,
+        method: method,
+        args: args
+      }
     end
 
     def destroy
-      destroyer.destroy(id)
+      configuration.merge(action: :destroy)
     end
 
-    def on(*events, &block)
-      @events |= events
-      updater.update(id, events: @events.map(&:to_s))
+    def on_client_published(message)
+      return unless message[:id] == id
 
-      super(*events, &block)
+      handle(message[:event], message[:meta])
     end
 
-    def subscribe(listener, options = {})
-      @events |= if options.key?(:on)
-                   options[:on]
-                 else
-                   listener.public_instance_methods(false)
-                 end
-      updater.update(id, events: @events.map(&:to_s))
-
-      super(listener, options)
+    def handle(event, *args)
+      events[event].call(*args)
     end
 
-    def notify(event, meta)
-      broadcast(event, meta)
+    def on(*events, &on_event)
+      events.each { |event| @events[event] = on_event }
+
+      emit update(events: @events.keys)
     end
 
-    def to_msg
-      msg = {
+    def un(*events)
+      events.each { |event| @events.delete(event) }
+
+      emit update(events: @events.keys)
+    end
+
+    def configuration
+      configuration = {
         id: id,
         tag: tag,
         attributes: attributes,
         style: style,
         meta: meta,
-        events: events.map(&:to_s)
+        events: events.keys
       }
-      msg.merge!(parent: parent.id) if parent
-      msg
+      configuration.merge!(parent: parent.id) if parent
+      configuration
+    end
+
+    def method_missing(name, *args, &block)
+      begin
+        klass = Object.const_get("Crimson::#{name}")
+        instance = klass.new(*args, parent: self)
+        instance.instance_eval(&block) if block
+        return instance
+      rescue NameError
+        super(name, *args, &block)
+      end
+    end
+
+    def to_s
+      id.to_s
     end
 
     def ==(object)
-      raise TypeError unless object.is_a?(self.class)
-
-      id == object.id
+      object.is_a?(self.class) && id == object.id
     end
 
     def app
       Crimson::Application.instance
-    end
-
-    def creator
-      app.creator
-    end
-
-    def updater
-      app.updater
-    end
-
-    def destroyer
-      app.destroyer
-    end
-
-    def notifier
-      app.notifier
-    end
-
-    def invoker
-      app.invoker
     end
   end
 
@@ -105,30 +136,47 @@ module Crimson
     attr_reader :children
 
     def initialize(parent: app.root, tag: 'div')
-      @children = {}
+      @children = []
       super(parent: parent, tag: tag)
     end
 
+    def link(subscriber, on_self, on_other)
+      super(subscriber, on_self, on_other)
+      children.each { |child| child.link(subscriber, on_self, on_other) }
+    end
+
+    def unlink(subscriber)
+      children.each { |child| child.unlink(subscriber) }
+      super(subscriber)
+    end
+
     def add_child(child)
-      @children[child.id] = child
+      return if children.include?(child)
+
+      children << child
+      emit :create, object: child
     end
 
     def remove_child(child)
-      @children.delete(child.id)
+      return unless children.include?(child)
+
+      emit :destroy, object: child
+      children.delete(child)
     end
 
-    def destroy
-      @parent&.remove_child(self)
-      @parent = nil
+    def insert_child(index, child)
+      add_child(child)
+
+      # move the child to the proper index
+      emit invoke('insertBefore', [child.id, children[index].id])
       
-      @children.each_value(&:destroy)
-      @children.clear
-      
-      super
+      # also swap the children in the children array
+      children.delete(child)
+      children.insert(index, child)
     end
 
-    def to_msg
-      super.merge(children: @children.values.map(&:to_msg))
+    def configuration
+      super.merge(children: @children.map(&:configuration))
     end
   end
 
@@ -140,17 +188,13 @@ module Crimson
       super(parent: parent, tag: tag)
     end
 
-    def to_msg
+    def configuration
       super.merge(value: @value)
-    end
-
-    def destroy
-      super
     end
 
     def value=(val)
       @value = val
-      updater.update(id, value: value)
+      emit update(value: value)
     end
   end
 end
