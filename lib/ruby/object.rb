@@ -115,7 +115,7 @@ module Crimson
 
     def method_missing(name, *args, &block)
       begin
-        klass = Object.const_get("Crimson::#{name}")
+        klass = Crimson.const_get("#{name}")
         instance = klass.new(*args, parent: self)
         instance.instance_eval(&block) if block
         return instance

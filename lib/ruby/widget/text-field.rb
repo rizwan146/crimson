@@ -46,4 +46,7 @@ module Crimson
       emit update(attributes: attributes)
     end
   end
+
+  class TextArea < TextField
+  end
 end
