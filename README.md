@@ -150,7 +150,7 @@ require 'crimson'
 # Root references the root object
 Crimson.Root do
   
-  TextArea do
+  TextField do
     # These blocks are really just instance_evals. You can call
     # any method that belongs to text area.
     self.value = "Some text"
@@ -168,6 +168,15 @@ Crimson.Root do
 
   table = Table ["Time", "Temperature (C)"] do
     Row ["9/14/2019 10:42", "21"]
+
+    self.style = {
+        'border': '1px solid black',
+        'border-collapse': 'collapse',
+        'height': '30px',
+        'width': '400px',
+        'text-align': 'center',
+        'padding': '10px'
+    }
   end
 
   button = Button "Log Temperature Reading" do
@@ -181,3 +190,5 @@ Crimson.Root do
 
 end
 ```
+
+![alt text](https://github.com/rizwan146/crimson/doc/images/temperature-readme-example.PNG "Temperature Logger Example")

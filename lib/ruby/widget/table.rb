@@ -13,10 +13,10 @@ module Crimson
     end
 
     def widget=(widget)
-      if widget.is_a?(String)
-        widget = Crimson::Text.new widget, parent: self
-      else
+      if widget.is_a?(Crimson::Object)
         widget.parent = self
+      else
+        widget = Crimson::Text.new widget.to_s, parent: self
       end
 
       @widget = widget
