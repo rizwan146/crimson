@@ -93,16 +93,23 @@ textarea.cols = 30
 
 ### Styles
 
-The Style API is still a work in progress. Ideally we want something like this:
+Objects can be styled as follows:
 
 ```ruby
 button = Crimson::Button.new "Click Me"
-button.style(
-  background_color: 'blue',
-  color: 'white',
-  font_family: 'verdana',
-  font_size: '300%'
-)
+button.style = {
+  'color': '#fff',
+  'background-color': '#dc3545',
+  'border-color': '#dc3545',
+  'font-family': 'Times New Roman, Times, serif',
+  'font-weight': '400',
+  'text-align': 'center',
+  'padding': '.375rem .75rem',
+  'font-size': '1rem',
+  'line-height': '1.5',
+  'border-radius': '.25rem',
+  'font-style': 'italic'
+}
 ```
 
 ### Events
@@ -114,11 +121,11 @@ event. This will indeed change when time permits. All the typical DOM events are
 textfield = Crimson::TextArea.new
 
 textfield.on(:mouseenter) do |meta|
-  textfield.style(opacity: 1)
+  textfield.style = { opacity: 1 }
 end
 
 textfield.on(:mouseleave) do |meta|
-  textfield.style(opacity: 0.5)
+  textfield.style = { opacity: 0.5 }
 end
 
 textfield.on(:keypress) do |meta|
@@ -156,7 +163,7 @@ Crimson.Root do
     append Text "Hello world"
     append Text "Welcome to my first crimson app!"
 
-    style background_color: "red", color: "white"
+    self.style = { 'background-color': 'red', 'color': 'white' }
   end
 
   table = Table ["Time", "Temperature (C)"] do
