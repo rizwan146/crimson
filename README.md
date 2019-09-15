@@ -191,4 +191,4 @@ Crimson.Root do
 end
 ```
 
-![alt text](https://github.com/rizwan146/crimson/doc/images/temperature-readme-example.PNG "Temperature Logger Example")
+![alt text](https://github.com/rizwan146/crimson/blob/master/doc/images/temperature-readme-example.PNG "Temperature Logger Example")
