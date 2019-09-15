@@ -95,6 +95,11 @@ module Crimson
       emit update(events: @events.keys)
     end
 
+    def style=(style = {})
+      @style.merge!(style)
+      emit update(style: style)
+    end
+
     def configuration
       configuration = {
         id: id,
@@ -178,12 +183,6 @@ module Crimson
     def configuration
       super.merge(children: @children.map(&:configuration))
     end
-
-    def style=(style)
-      @style = style
-      emit update(style: style)
-    end
-
   end
 
   class Data < Object

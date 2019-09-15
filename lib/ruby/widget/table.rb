@@ -32,7 +32,7 @@ module Crimson
     def insert(index, column)
       raise IndexError unless columns[index]
 
-      insert_child(index, Column.new(self, column))
+      insert_child(index, Column.new(column, parent: self))
       columns[index]
     end
 
@@ -71,7 +71,7 @@ module Crimson
     def insert(index, row)
       raise IndexError unless rows[index]
 
-      insert_child(index, Row.new(self, row))
+      insert_child(index, Row.new(row, parent: self))
       rows[index]
     end
 
