@@ -178,6 +178,12 @@ module Crimson
     def configuration
       super.merge(children: @children.map(&:configuration))
     end
+
+    def style=(style)
+      @style = style
+      emit update(style: style)
+    end
+
   end
 
   class Data < Object

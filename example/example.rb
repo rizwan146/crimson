@@ -14,6 +14,20 @@ Crimson.Root do
 
   button = Button 'MyButton'
 
+  # Any CSS style is supported
+  # '-' not supported, need to use single quote
+  button.style = {color: '#fff',
+                  'background-color': '#dc3545',
+                  'border-color': '#dc3545',
+                  'font-family': 'Times New Roman, Times, serif',
+                  'font-weight': '400',
+                  'text-align': 'center',
+                  padding: '.375rem .75rem',
+                  'font-size': '1rem',
+                  'line-height': '1.5',
+                  'border-radius': '.25rem',
+                  'font-style': 'italic',}
+
   textfield = TextField do
     self.placeholder = 'Hello World'
     self.value = 'Yes'
