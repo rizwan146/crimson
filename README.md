@@ -45,15 +45,16 @@ text.value = "I am new data"
 
 Widget objects are essentially containers that hold other
 widget and data objects. They are meant to represent DOM elements
-that can have children nodes (for example, a <table>)
+that can have children nodes (for example, an HTML table element)
 
 ```ruby
 widget = Crimson::Widget.new
 text = Crimson::Text.new "Some Text"
 
+# append the text as a child of the widget's DOM element
 widget.add_child text
 
-# or
+# or, equivalently you can set the child's parent
 text2 = Crimson::Text.new(parent: widget)
 ```
 

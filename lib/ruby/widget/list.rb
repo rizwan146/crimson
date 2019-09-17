@@ -4,9 +4,9 @@ module Crimson
   class ListItem < Widget
     attr_reader :widget
 
-    def initialize(parent, widget)
+    def initialize(widget, parent: app.root)
       super(parent: parent, tag: 'li')
-      widget.parent = self
+      widget.bond(self)
 
       @widget = widget
     end
@@ -35,12 +35,12 @@ module Crimson
     end
 
     def append(widget)
-      add_child(ListItem.new(self, widget))
+      ListItem.new(widget, parent: self)
     end
 
     def delete(widget)
       item = widget.parent
-      remove_child(item)
+      item.unbond
     end
   end
 end

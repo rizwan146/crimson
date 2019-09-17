@@ -4,6 +4,8 @@ require_relative 'lib/ruby/base'
 require_relative 'lib/ruby/client-interactor'
 require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
+require_relative 'lib/ruby/layout'
+require_relative 'lib/ruby/theme'
 
 module Crimson
   @@webserver_enabled = false

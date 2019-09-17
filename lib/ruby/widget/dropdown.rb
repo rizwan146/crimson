@@ -36,7 +36,7 @@ module Crimson
     end
 
     def remove_option(option)
-      remove_child(@options[option])
+      unbond(@options[option])
       @options.delete(option)
     end
   end

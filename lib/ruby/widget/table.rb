@@ -14,7 +14,7 @@ module Crimson
 
     def widget=(widget)
       if widget.is_a?(Crimson::Object)
-        widget.parent = self
+        widget.bond(self)
       else
         widget = Crimson::Text.new widget.to_s, parent: self
       end
@@ -42,7 +42,7 @@ module Crimson
     end
 
     def delete(column)
-      remove_child(column)
+      column.unbond
     end
 
     def columns
@@ -81,7 +81,7 @@ module Crimson
     end
 
     def delete(row_widget)
-      remove_child(row_widget)
+      row_widget.unbond
     end
 
     def rows

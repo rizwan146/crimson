@@ -3,14 +3,18 @@
 require_relative 'publisher'
 require_relative 'base'
 require_relative 'object'
+require_relative 'theme'
 
 module Crimson
   class Object
     include Crimson::Publisher
+    include Crimson::Themeable
 
     public
 
-    attr_reader :id, :parent, :tag, :attributes, :style
+    attr_accessor :parent
+
+    attr_reader :id, :tag, :attributes, :style
 
     protected
 
@@ -30,21 +34,11 @@ module Crimson
       @events = {}
       @meta = []
 
-      @style = {}
+      @style = theme :theme
       @attributes = {}
       @tag = tag
 
-      @parent = parent
-      @parent&.add_child(self)
-    end
-
-    def parent=(parent)
-      # remove self from old parent (will call destroy)
-      @parent.remove_child(self)
-
-      # add parent to new child  (will call create)
-      @parent = parent
-      @parent.add_child(self)
+      bond(parent)
     end
 
     def emit(configuration, object: self)
@@ -67,6 +61,26 @@ module Crimson
         method: method,
         args: args
       }
+    end
+
+    def bond(parent)
+      unbond
+
+      self.parent = parent
+      if parent
+        parent.add_child(self)
+        parent.emit :create, object: self
+      end
+    end
+
+    def unbond
+      old_parent = self.parent
+      self.parent = nil
+
+      if old_parent
+        old_parent.remove_child(self)
+        old_parent.emit :destroy, object: self
+      end
     end
 
     def destroy
@@ -98,6 +112,10 @@ module Crimson
     def style=(style = {})
       @style.merge!(style)
       emit update(style: style)
+    end
+
+    def theme=(*args)
+      self.style = theme(*args)
     end
 
     def configuration
@@ -159,13 +177,11 @@ module Crimson
       return if children.include?(child)
 
       children << child
-      emit :create, object: child
     end
 
     def remove_child(child)
       return unless children.include?(child)
-
-      emit :destroy, object: child
+      
       children.delete(child)
     end
 
