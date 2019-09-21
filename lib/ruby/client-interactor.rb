@@ -16,11 +16,13 @@ module Crimson
     protected
 
     attr_reader :channel, :subscribers, :object_cache
+    attr_reader :on_connect, :on_disconnect
+
     @@id_count = 1
 
     public
 
-    def initialize(socket)
+    def initialize(socket, on_connect: nil, on_disconnect: nil)
       @id = :"client_#{@@id_count}"
       @@id_count += 1
 
@@ -28,6 +30,9 @@ module Crimson
       socket.onopen(&method(:on_open))
       socket.onmessage(&method(:on_message))
       socket.onclose(&method(:on_close))
+
+      @on_connect = on_connect
+      @on_disconnect = on_disconnect
 
       @channel = EventMachine::Channel.new
       @subscribers = {}
@@ -53,9 +58,7 @@ module Crimson
       return if is_cached?(object)
 
       cache(configuration)
-      unless is_subscriber?(object)
-        object.link(self, :on_object_published, :on_client_published)
-      end
+      link(object) unless is_subscriber?(object)
 
       send(configuration)
     end
@@ -76,7 +79,18 @@ module Crimson
       return unless is_cached?(object)
 
       uncache(configuration)
-      object.unlink(self) if is_subscriber?(object)
+      unlink(object) if is_subscriber?(object)
+
+      send(configuration)
+    end
+
+    def import(type, src)
+      configuration = { action: :import }
+
+      case type
+      when :css then configuration.merge!(type: :'text/css', href: src, rel: :stylesheet)
+      when :js then configuration.merge!(type: :'text/javascript', src: src)
+      end
 
       send(configuration)
     end
@@ -92,9 +106,22 @@ module Crimson
       app.logger.debug "[#{self.class}::#{__method__}] #{id} connected."
       app.add_client(self)
 
-      app.root.link(self, :on_object_published, :on_client_published)
-
+      link(app.root)
       app.root.emit :create
+
+      on_connect&.call(self)
+    end
+
+    def link(object)
+      raise TypeError unless object.is_a?(Crimson::Object)
+
+      object.link(self, :on_object_published, :on_client_published)
+    end
+
+    def unlink(object)
+      raise TypeError unless object.is_a?(Crimson::Object)
+
+      object.unlink(self)
     end
 
     def on_message(message, _type)
@@ -109,7 +136,9 @@ module Crimson
     def on_close(*_args)
       app.logger.debug "[#{self.class}::#{__method__}] #{id} disconnected."
 
-      app.root.unlink(self)
+      unlink(app.root)
+
+      on_disconnect&.call(self)
     end
 
     def on_object_published(args)
@@ -146,6 +175,10 @@ module Crimson
       raise TypeError unless client.is_a?(self.class)
 
       id == client.id
+    end
+
+    def to_s
+      id.to_s
     end
 
     def app

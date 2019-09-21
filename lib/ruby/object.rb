@@ -3,12 +3,10 @@
 require_relative 'publisher'
 require_relative 'base'
 require_relative 'object'
-require_relative 'theme'
 
 module Crimson
   class Object
     include Crimson::Publisher
-    include Crimson::Themeable
 
     public
 
@@ -34,7 +32,7 @@ module Crimson
       @events = {}
       @meta = []
 
-      @style = theme :theme
+      @style = {}
       @attributes = {}
       @tag = tag
 
@@ -67,7 +65,7 @@ module Crimson
       unbond
 
       self.parent = parent
-      if parent
+      if parent && parent != app.root
         parent.add_child(self)
         parent.emit :create, object: self
       end
@@ -109,13 +107,18 @@ module Crimson
       emit update(events: @events.keys)
     end
 
+    def set(attribute, value)
+      attributes[attribute] = value
+      emit update(attributes: attributes)
+    end
+
+    def get(attribute)
+      attributes[attribute]
+    end
+
     def style=(style = {})
       @style.merge!(style)
       emit update(style: style)
-    end
-
-    def theme=(*args)
-      self.style = theme(*args)
     end
 
     def configuration

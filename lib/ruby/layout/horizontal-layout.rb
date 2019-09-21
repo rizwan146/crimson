@@ -8,9 +8,9 @@ module Crimson
         self.style = {
             'display': 'flex',
             'flex-direction': 'row',
-            'justify-content': 'space-equal',
+            'justify-content': 'space-evenly',
             'align-items': 'vertically',
-            'align-content': 'stretch'
+            'align-content': 'space-evenly'
         }
 
         objects.each do |object|

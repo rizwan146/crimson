@@ -12,11 +12,14 @@ require_relative 'webserver'
 module Crimson
   class Application
     include Singleton
+
     attr_accessor :logger
     attr_accessor :name, :webserver_host, :webserver_port, :websocket_host, :websocket_port
     attr_accessor :width, :height, :resizable
     attr_reader :clients, :objects
     attr_reader :webview
+
+    attr_accessor :on_connect, :on_disconnect
 
     def initialize(
         name: 'myapp',
@@ -43,6 +46,12 @@ module Crimson
       @width = width
       @height = height
       @resizable = resizable
+
+      @on_connect = ->(client) {
+      }
+
+      @on_disconnect = ->(client) {
+      }
 
       @clients = []
       @objects = {}
@@ -89,7 +98,9 @@ module Crimson
 
     def start_websocket
       WebSocket::EventMachine::Server
-        .start(host: websocket_host, port: websocket_port) { |ws| Crimson::ClientInteractor.new(ws) }
+        .start(host: websocket_host, port: websocket_port) do |ws|
+          Crimson::ClientInteractor.new(ws, on_connect: on_connect, on_disconnect: on_disconnect)
+        end
     end
   end
 end

@@ -6,7 +6,7 @@ Crimson.logger.level = Logger::DEBUG
 Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
-Crimson.Root do
+main_widget = Crimson.Root do
   HorizontalLayout do
     Text 'Hello World'
     Text 'Hello World2'
@@ -136,4 +136,17 @@ Crimson.Root do
 
     Image 'https://images.template.net/wp-content/uploads/2016/04/26122303/Cool-Lion-Colorful-Art.jpg'
   end
+end
+
+Crimson.on_connect do |client|
+  # subscribe the client to messages that are "emitted" from the main widget
+  client.link(main_widget)
+
+  # emit the create message to the client(s)
+  main_widget.emit :create
+end
+
+Crimson.on_disconnect do |client|
+  # unsubscribe to main_widget
+  client.unlink(main_widget)
 end

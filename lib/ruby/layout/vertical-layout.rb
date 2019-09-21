@@ -6,11 +6,11 @@ module Crimson
         super(parent: parent)
 
         self.style = {
-            'display': 'flex',
-            'flex-direction': 'column',
-            'justify-content': 'space-equal',
-            'align-items': 'horizontally',
-            'align-content': 'stretch'
+          'display': 'flex',
+          'flex-direction': 'column',
+          'justify-content': 'space-evenly',
+          'align-items': 'horizontally',
+          'align-content': 'space-evenly'
         }
 
         objects.each do |object|

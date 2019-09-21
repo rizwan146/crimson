@@ -5,7 +5,6 @@ require_relative 'lib/ruby/client-interactor'
 require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
 require_relative 'lib/ruby/layout'
-require_relative 'lib/ruby/theme'
 
 module Crimson
   @@webserver_enabled = false
@@ -13,7 +12,18 @@ module Crimson
   @@webview_enabled = false
 
   def self.Root(&block)
-    Crimson::Application.instance.root.instance_eval(&block)
+    widget = Widget.new
+    widget.instance_eval(&block)
+
+    widget
+  end
+
+  def self.on_connect(&block)
+    Crimson::Application.instance.on_connect = block
+  end
+
+  def self.on_disconnect(&block)
+    Crimson::Application.instance.on_disconnect = block
   end
 
   def self.logger
@@ -89,8 +99,10 @@ module Crimson
   end
 end
 
-at_exit { Crimson::Application.instance.run(
-  websocket_enabled: Crimson.websocket_enabled,
-  webserver_enabled: Crimson.webserver_enabled,
-  webview_enabled: Crimson.webserver_enabled
-) }
+at_exit do
+  Crimson::Application.instance.run(
+    websocket_enabled: Crimson.websocket_enabled,
+    webserver_enabled: Crimson.webserver_enabled,
+    webview_enabled: Crimson.webserver_enabled
+  )
+end
