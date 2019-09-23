@@ -33,7 +33,7 @@ module Crimson
       @meta = []
 
       @style = {}
-      @attributes = {}
+      @attributes = {'class': [self.class.name]}
       @tag = tag
 
       bond(parent)
@@ -119,6 +119,15 @@ module Crimson
     def style=(style = {})
       @style.merge!(style)
       emit update(style: style)
+    end
+
+    def css_class=(css_class = [])
+
+      @attributes.key?("class") ?
+          @attributes['class'].concat(css_class) :
+          @attributes['class'] = css_class
+
+      emit update(attributes: attributes)
     end
 
     def configuration
