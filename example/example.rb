@@ -31,6 +31,9 @@ main_widget = Crimson.Root do
                      'border-radius': '.25rem',
                      'font-style': 'italic' }
 
+    button.css_class = ['cool']
+    button.css_class += ['btn', 'btn-danger']
+
     textfield = TextField do
       self.placeholder = 'Hello World'
       self.value = 'Yes'
