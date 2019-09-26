@@ -7,8 +7,6 @@ require_relative 'base'
 
 module Crimson
   class ClientInteractor
-    include Crimson::Publisher
-
     public
 
     attr_reader :id, :socket
@@ -34,9 +32,6 @@ module Crimson
       @on_connect = on_connect
       @on_disconnect = on_disconnect
 
-      @channel = EventMachine::Channel.new
-      @subscribers = {}
-
       @object_cache = {}
     end
 
@@ -57,9 +52,8 @@ module Crimson
     def create(object, configuration)
       return if is_cached?(object)
 
+      observe(object)
       cache(configuration)
-      link(object) unless is_subscriber?(object)
-
       send(configuration)
     end
 
@@ -78,9 +72,8 @@ module Crimson
     def destroy(object, configuration)
       return unless is_cached?(object)
 
+      stop_observing(object)
       uncache(configuration)
-      unlink(object) if is_subscriber?(object)
-
       send(configuration)
     end
 
@@ -106,37 +99,41 @@ module Crimson
       app.logger.debug "[#{self.class}::#{__method__}] #{id} connected."
       app.add_client(self)
 
-      link(app.root)
+      observe(app.root)
       app.root.emit :create
 
       on_connect&.call(self)
     end
 
-    def link(object)
+    def observe(object)
       raise TypeError unless object.is_a?(Crimson::Object)
 
-      object.link(self, :on_object_published, :on_client_published)
+      object.add_subscriber(self, :on_object_published)
     end
 
-    def unlink(object)
+    def stop_observing(object)
       raise TypeError unless object.is_a?(Crimson::Object)
 
-      object.unlink(self)
+      object.remove_subscriber(self)
     end
 
     def on_message(message, _type)
       app.logger.debug "[#{self.class}::#{__method__}] Message recieved from #{id}."
 
       message = symbolize(JSON.parse(message))
-      message[:meta].merge!(client: id)
+      puts message
 
-      channel << message
+      case message[:action]
+      when :notify
+        message[:meta].merge!(client: id)
+        app.objects[ message[:id] ].handle( message[:event], message[:meta] )
+      end
     end
 
     def on_close(*_args)
       app.logger.debug "[#{self.class}::#{__method__}] #{id} disconnected."
 
-      unlink(app.root)
+      stop_observing(app.root)
 
       on_disconnect&.call(self)
     end
@@ -156,7 +153,7 @@ module Crimson
 
     def symbolize(hash)
       if hash.is_a?(Hash)
-        symbolizable_values = %i[id event]
+        symbolizable_values = %i[id event action]
         hash.keys.each do |key|
           hash[(begin
                   key.to_sym

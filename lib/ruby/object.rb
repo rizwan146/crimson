@@ -25,6 +25,7 @@ module Crimson
     def initialize(parent: app.root, tag: 'div')
       @id = :"crimson_#{app.name}_#{@@id_count}"
       @@id_count += 1
+      app.objects[id] = self
 
       @channel = EventMachine::Channel.new
       @subscribers = {}
@@ -83,12 +84,6 @@ module Crimson
 
     def destroy
       configuration.merge(action: :destroy)
-    end
-
-    def on_client_published(message)
-      return unless message[:id] == id
-
-      handle(message[:event], message[:meta])
     end
 
     def handle(event, *args)
@@ -166,13 +161,13 @@ module Crimson
       super(parent: parent, tag: tag)
     end
 
-    def link(subscriber, on_self, on_other)
-      super(subscriber, on_self, on_other)
-      children.each { |child| child.link(subscriber, on_self, on_other) }
+    def add_subscriber(subscriber, on_publish)
+      super(subscriber, on_publish)
+      children.each { |child| child.add_subscriber(subscriber, on_publish) }
     end
 
-    def unlink(subscriber)
-      children.each { |child| child.unlink(subscriber) }
+    def remove_subscriber(subscriber)
+      children.each { |child| child.remove_subscriber(subscriber) }
       super(subscriber)
     end
 

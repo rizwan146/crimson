@@ -3,6 +3,8 @@ require_relative '../../crimson'
 Crimson.logger.level = Logger::DEBUG
 Crimson.webserver_enabled = true
 
+# class RegisterForm
+
 class LoginForm < Crimson::Form
   protected
   attr_accessor :client
@@ -11,20 +13,23 @@ class LoginForm < Crimson::Form
   def initialize(client, parent: app.root)
     super(parent: parent)
 
-    @username = Input(:text) { set :placeholder, "Username" }
-    @password = Input(:text) { set :placeholder, "Password" }
-    @submit = Input(:submit) { set :value, "Login" }
+    @username = Input(:text) { set :placeholder, :Username }
+    @password = Input(:password) { set :placeholder, :Password }
+    @submit = Input(:submit) { set :value, :Login }
+
+    # this prevent the page from refreshing when we submit
+    set :onsubmit, :'return false'
 
     VerticalLayout [@username, @password, @submit]
 
     self.client = client
-    client.link(self)
+    client.observe(self)
     emit :create
   end
 
   def on_login_success
     emit :destroy
-    client.unlink(self)
+    client.stop_observing(self)
   end
 
   def on_login_fail
