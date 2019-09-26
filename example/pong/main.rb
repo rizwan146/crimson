@@ -13,14 +13,67 @@ class LoginForm < Crimson::Form
   def initialize(client, parent: app.root)
     super(parent: parent)
 
-    @username = Input(:text) { set :placeholder, :Username }
-    @password = Input(:password) { set :placeholder, :Password }
-    @submit = Input(:submit) { set :value, :Login }
+    self.style = {
+      'min-height': '100vh',
+      'display': 'flex',
+      'align-items': 'center',
+    }
+
+    @title = H3 "Crimson" do
+      self.style = {
+        'max-height': '40px',
+        'text-align': 'center',
+        'color': '#fff'
+      }
+    end
+
+    @username = Input(:text) do
+      set :placeholder, :Username
+
+      self.css_class += [:"form-control"]
+      self.style = {
+        'max-height': '40px'
+      }
+    end
+
+    @password = Input(:password) do
+      set :placeholder, :Password
+
+      self.css_class += [:"form-control"]
+      self.style = {
+        'max-height': '40px'
+      }
+    end
+
+    @submit = Input(:submit) do
+      set :value, :Login
+
+      self.css_class += [:"btn"]
+      self.style = {
+        'max-height': '40px',
+        'font-weight': '600',
+        'width': '50%',
+        'color': '#282726',
+        'background-color': '#fff',
+        'border': 'none',
+        'border-radius': '1.5rem',
+        'padding': '2%'
+      }
+    end
 
     # this prevent the page from refreshing when we submit
     set :onsubmit, :'return false'
 
-    VerticalLayout [@username, @password, @submit]
+    VerticalLayout [@title, @username, @password, @submit] do
+      self.style = {
+        'margin': '0 auto',
+        'width': '350px',
+        'height': '300px',
+        'padding': '30px 30px 30px 30px',
+        'background': '#B00020',
+        'box-shadow': '0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19)'
+      }
+    end
 
     self.client = client
     client.observe(self)
