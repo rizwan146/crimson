@@ -4,14 +4,6 @@ require_relative 'login-form'
 Crimson.logger.level = Logger::WARN
 Crimson.webserver_enabled = true
 
-class UserManager
-  def initialize()
-
-  end
-
-
-end
-
 Crimson.on_connect do |client|
   # Importing Bootstrap and its dependencies
   client.import :js, :'https://code.jquery.com/jquery-3.3.1.slim.min.js'

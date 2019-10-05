@@ -70,11 +70,11 @@ class LoginForm < Crimson::Form
       username = @username_input.value
       password = @password_input.value
       
-      # if UserManager.instance.authenticate(username, password)
-      #   @on_success&.call
-      # else
-      #   @on_failure&.call
-      # end
+      if UserManager.instance.authenticate(username, password)
+        @on_success&.call
+      else
+        @on_failure&.call
+      end
     end
 
     def on_success(&block)
