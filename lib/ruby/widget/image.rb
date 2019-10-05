@@ -12,7 +12,7 @@ module Crimson
     def src=(source)
       @src = source
       attributes.merge!(src: source)
-      emit update(attributes: attributes)
+      update(attributes: attributes)
     end
   end
 end

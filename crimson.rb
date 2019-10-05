@@ -4,6 +4,7 @@ require_relative 'lib/ruby/base'
 require_relative 'lib/ruby/client-interactor'
 require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
+require_relative 'lib/ruby/variable'
 require_relative 'lib/ruby/layout'
 
 module Crimson

@@ -40,26 +40,24 @@ module Crimson
       bond(parent)
     end
 
-    def emit(configuration, object: self)
-      configuration = object.send(configuration) if configuration.is_a?(Symbol)
-      channel << [object, configuration]
-    end
-
-    def create
-      configuration.merge(action: :create)
-    end
-
     def update(changes)
-      changes.merge(action: :update, id: id)
+      emit changes.merge(action: :update, id: id)
     end
 
     def invoke(method, args)
-      {
-        action: :invoke,
-        id: id,
-        method: method,
-        args: args
-      }
+      emit invoke_configuration.merge(method: method, args: args)
+    end
+
+    def create_configuration
+      configuration.merge(action: :create)
+    end
+
+    def destroy_configuration
+      { action: :destroy, id: id }
+    end
+
+    def invoke_configuration
+      { action: :invoke, id: id }
     end
 
     def bond(parent)
@@ -68,7 +66,7 @@ module Crimson
       self.parent = parent
       if parent && parent != app.root
         parent.add_child(self)
-        parent.emit :create, object: self
+        parent.each_subscriber { |client| client.create(self) }
       end
     end
 
@@ -78,12 +76,8 @@ module Crimson
 
       if old_parent
         old_parent.remove_child(self)
-        old_parent.emit :destroy, object: self
+        old_parent.each_subscriber { |client| client.destroy(self) }
       end
-    end
-
-    def destroy
-      configuration.merge(action: :destroy)
     end
 
     def handle(event, *args)
@@ -93,18 +87,18 @@ module Crimson
     def on(*events, &on_event)
       events.each { |event| @events[event] = on_event }
 
-      emit update(events: @events.keys)
+      update(events: @events.keys)
     end
 
     def un(*events)
       events.each { |event| @events.delete(event) }
 
-      emit update(events: @events.keys)
+      update(events: @events.keys)
     end
 
     def set(attribute, value)
       attributes[attribute] = value
-      emit update(attributes: attributes)
+      update(attributes: attributes)
     end
 
     def get(attribute)
@@ -113,7 +107,7 @@ module Crimson
 
     def style=(style = {})
       @style.merge!(style)
-      emit update(style: style)
+      update(style: style)
     end
 
     def css_class()
@@ -121,11 +115,9 @@ module Crimson
     end
 
     def css_class=(css_class = [])
-
       class_attr = { class: css_class }
       @attributes.merge!(class_attr);
-      emit update(attributes: class_attr)
-
+      update(attributes: class_attr)
     end
 
     def configuration
@@ -141,6 +133,16 @@ module Crimson
       configuration
     end
 
+    def to_s
+      id.to_s
+    end
+
+    def ==(object)
+      object.is_a?(self.class) && id == object.id
+    end
+
+    protected
+
     def method_missing(name, *args, &block)
       begin
         klass = Crimson.const_get("#{name}")
@@ -150,14 +152,6 @@ module Crimson
       rescue NameError
         super(name, *args, &block)
       end
-    end
-
-    def to_s
-      id.to_s
-    end
-
-    def ==(object)
-      object.is_a?(self.class) && id == object.id
     end
 
     def app
@@ -199,7 +193,7 @@ module Crimson
       add_child(child)
 
       # move the child to the proper index
-      emit invoke('insertBefore', [child.id, children[index].id])
+      invoke('insertBefore', [child.id, children[index].id])
       
       # also swap the children in the children array
       children.delete(child)
@@ -225,7 +219,7 @@ module Crimson
 
     def value=(val)
       @value = val
-      emit update(value: value)
+      update(value: value)
     end
   end
 end
