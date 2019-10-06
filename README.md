@@ -1,6 +1,8 @@
 # Crimson
 ## A library for creating web based GUIs using Ruby
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/rizwan146/crimson?branch=master)](https://bettercodehub.com/)
+
 Implementation currently in progress..
 
 run ruby example/example.rb
