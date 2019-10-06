@@ -2,6 +2,7 @@
 ## A library for creating web based GUIs using Ruby
 
 [![BCH compliance](https://bettercodehub.com/edge/badge/rizwan146/crimson?branch=master)](https://bettercodehub.com/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ff7408645e0200a86bb4/maintainability)](https://codeclimate.com/github/rizwan146/crimson/maintainability)
 
 Implementation currently in progress..
 
