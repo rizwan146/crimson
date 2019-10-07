@@ -5,7 +5,7 @@ Crimson.logger.level = Logger::DEBUG
 Crimson.webserver_enabled = true
 
 # Root references the root object
-Crimson.Root do
+main = Crimson.Root do
   
   TextField do
     # These blocks are really just instance_evals. You can call
@@ -23,8 +23,11 @@ Crimson.Root do
     self.style = { 'background-color': 'red', 'color': 'white' }
   end
 
-  table = Table ["Time", "Temperature (C)"] do
-    Row ["9/14/2019 10:42", "21"]
+  table = Table do
+    Row do
+      ColumnHead() { Text "Time" }
+      ColumnHead() { Text "Temperature" }
+    end
 
     self.style = {
         'border': '1px solid black',
@@ -41,8 +44,15 @@ Crimson.Root do
       time = Time.now.strftime("%d/%m/%Y %H:%M")
       temperature = rand(-30..30)
 
-      table.append [time, temperature]
+      table.Row {
+        Column() { Text time }
+        Column() { Text temperature }
+      }
     end
   end
 
+end
+
+Crimson.on_connect do |client|
+  client.create(main)
 end

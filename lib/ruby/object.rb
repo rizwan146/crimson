@@ -44,8 +44,14 @@ module Crimson
       emit changes.merge(action: :update, id: id)
     end
 
-    def invoke(method, args)
-      emit invoke_configuration.merge(method: method, args: args)
+    def invoke(invokable)
+      if !invokable.key?(:method)
+        raise(ArgumentError, "Expected invokable to include method name")
+      elsif !invokable.key?(:args)
+        raise(ArgumentError, "Expected invokable to include method args")
+      end
+
+      emit invoke_configuration.merge(invokable)
     end
 
     def create_configuration
@@ -57,7 +63,7 @@ module Crimson
     end
 
     def invoke_configuration
-      { action: :invoke, id: id }
+      { action: :invoke, invoker: :default, id: id }
     end
 
     def bond(parent)
@@ -193,7 +199,7 @@ module Crimson
       add_child(child)
 
       # move the child to the proper index
-      invoke('insertBefore', [child.id, children[index].id])
+      invoke(method: 'insertBefore', args: [child.id, children[index].id])
       
       # also swap the children in the children array
       children.delete(child)

@@ -11,11 +11,12 @@ class LoginForm < Crimson::Form
         'align-items': 'center',
       }
   
-      @title = H3 "Crimson" do
+      @title = H3 "pong" do
+        self.css_class += [:"text-primary"]
         self.style = {
           'max-height': '40px',
           'text-align': 'center',
-          'color': '#fff'
+          'user-select': 'none'
         }
       end
   
@@ -38,17 +39,11 @@ class LoginForm < Crimson::Form
   
       @submit_button = Input(:submit) do
         set :value, :Login
-  
-        self.css_class += [:"btn"]
+        set :onclick, 'this.blur();' # remove the border
+
+        self.css_class += [:"btn", :"btn-primary"]
         self.style = {
-          'max-height': '40px',
-          'font-weight': '600',
-          'width': '50%',
-          'color': '#282726',
-          'background-color': '#fff',
-          'border': 'none',
-          'border-radius': '1.5rem',
-          'padding': '2%'
+          'max-height': '40px'
         }
       end
   
@@ -58,7 +53,7 @@ class LoginForm < Crimson::Form
           'width': '350px',
           'height': '300px',
           'padding': '30px 30px 30px 30px',
-          'background': '#B00020',
+          'border-radius': '10px',
           'box-shadow': '0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19)'
         }
       end
@@ -67,11 +62,12 @@ class LoginForm < Crimson::Form
     end
   
     def on_submit(meta)
+      user_manager = UserManager.instance
       username = @username_input.value
       password = @password_input.value
       
-      if UserManager.instance.authenticate(username, password)
-        @on_success&.call
+      if user_manager.authenticate(username, password)
+        @on_success&.call( user_manager[username] )
       else
         @on_failure&.call
       end

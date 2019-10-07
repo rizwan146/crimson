@@ -5,94 +5,38 @@ require_relative 'text'
 
 module Crimson
   class Column < Widget
-    attr_reader :widget
-
-    def initialize(widget, parent: app.root)
-      super(parent: parent, tag: 'td')
-      self.widget = widget
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :td)
     end
+  end
 
-    def widget=(widget)
-      if widget.is_a?(Crimson::Object)
-        widget.bond(self)
-      else
-        widget = Crimson::Text.new widget.to_s, parent: self
-      end
-
-      @widget = widget
+  class ColumnHead < Widget
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :th)
     end
   end
 
   class Row < Widget
-    def initialize(columns, parent: app.root)
-      super(parent: parent, tag: 'tr')
-      columns.each { |column| append column }
-    end
-
-    def insert(index, column)
-      raise IndexError unless columns[index]
-
-      insert_child(index, Column.new(column, parent: self))
-      columns[index]
-    end
-
-    def append(column)
-      Column.new(column, parent: self)
-      columns.last
-    end
-
-    def delete(column)
-      column.unbond
-    end
-
-    def columns
-      children
-    end
-
-    def [](index)
-      raise IndexError unless columns[index]
-
-      columns[index]
-    end
-
-    def []=(index, widget)
-      raise IndexError unless columns[index]
-
-      columns[index].widget = widget
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :tr)
     end
   end
 
   class Table < Widget
-    def initialize(*rows, parent: app.root)
-      super(parent: parent, tag: 'table')
-      rows.each { |row| append row }
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :table)
     end
+  end
 
-    def insert(index, row)
-      raise IndexError unless rows[index]
-
-      insert_child(index, Row.new(row, parent: self))
-      rows[index]
+  class THead < Widget
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :thead)
     end
+  end
 
-    def append(row)
-      Row.new(row, parent: self)
-      rows.last
-    end
-
-    def delete(row_widget)
-      row_widget.unbond
-    end
-
-    def rows
-      children
-    end
-
-    def [](*args)
-      row, col = *args
-      raise IndexError unless rows[row]
-
-      if col then return children[row][col] else return children[row] end
+  class TBody < Widget
+    def initialize(parent: app.root)
+      super(parent: parent, tag: :tbody)
     end
   end
 end

@@ -91,52 +91,13 @@ main_widget = Crimson.Root do
       colfield.value = meta[:value]
     end
 
-    table = Table ['Header Column 1', 'Header Column 2'] do
-      # append a row
-      append ['This is a cool column', Button('I do nothing')]
-
-      # or equivalently
-      Row ['Cooler column', Button('I also do nothing')] do
-        append 'Appended Column'
-        Column 'Constructed Column'
+    table = Table do
+      Row do
+        Column() { Text "Hello" }
+        Column() { Button "I do nothing" }
       end
     end
-
-    add_row_button.on(:click) do
-      # old initialization, if you prefer...
-      add_column_button = Crimson::Button.new 'Add Column'
-      rmv_column_button = Crimson::Button.new 'Remove Column'
-
-      row = table.append ["Row#{table.rows.size + 1}", add_column_button, rmv_column_button]
-
-      add_column_button.on(:click) do
-        row.append "Col#{row.columns.size + 1}"
-      end
-
-      rmv_column_button.on(:click) do
-        row.delete row.columns.last unless row.columns.size <= 3
-      end
-    end
-
-    rmv_row_button.on(:click) do
-      table.delete table.rows.last unless table.rows.empty?
-    end
-
-    insert_col_button.on(:click) do
-      begin
-        row = Integer(rowfield.value)
-        col = Integer(colfield.value)
-        val = valuefield.value
-        table[row].insert(col, val)
-      rescue TypeError
-        puts 'Error: Cannot convert empty field to numeric.'
-      rescue IndexError
-        puts 'Error: Index out of bounds!'
-      rescue ArgumentError
-        puts 'Error: Expected numeric but got a string'
-      end
-    end
-
+    
     Image 'https://images.template.net/wp-content/uploads/2016/04/26122303/Cool-Lion-Colorful-Art.jpg'
   end
 end
