@@ -13,19 +13,15 @@ Crimson.on_connect do |client|
   client.import :js, :'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js'
   client.import :css, :'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
 
+  main_widget = Crimson::Widget.new
+  client.create(main_widget)
+
   login_form = LoginForm.new
-  # client.create(login_form)
-  canvas = Crimson::Canvas.new(800, 600)
-  client.create( canvas )
-  
-  context = canvas.context('2d')
-  context.moveTo(0, 0)
-  context.lineTo(200, 100)
-  context.stroke()
+  client.create(login_form)
 
   login_form.on_success do |user|
     client.destroy(login_form)
-    # client.create(GamePanel.new(user))
+    client.create(GamePanel.new(user))
   end
 end
 

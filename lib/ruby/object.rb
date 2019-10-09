@@ -173,6 +173,36 @@ module Crimson
       super(parent: parent, tag: tag)
     end
 
+    def append(child)
+      child.bond(self)
+    end
+
+    def remove(child)
+      child.unbond if child.parent == self
+    end
+
+    def insert(index, child)
+      append(child)
+
+      unless index == children.length
+        # move the child to the proper index
+        invoke(method: 'insertBefore', args: [child.id, children[index].id])
+        
+        # also swap the children in the children array
+        children.delete(child)
+        children.insert(index, child)
+      end
+    end
+
+    def replace(index, child)
+      remove(children[index])
+      insert(index, child)
+    end
+
+    def configuration
+      super.merge(children: @children.map(&:configuration))
+    end
+    
     def add_subscriber(subscriber, on_publish)
       super(subscriber, on_publish)
       children.each { |child| child.add_subscriber(subscriber, on_publish) }
@@ -182,7 +212,7 @@ module Crimson
       children.each { |child| child.remove_subscriber(subscriber) }
       super(subscriber)
     end
-
+    
     def add_child(child)
       return if children.include?(child)
 
@@ -193,21 +223,6 @@ module Crimson
       return unless children.include?(child)
       
       children.delete(child)
-    end
-
-    def insert_child(index, child)
-      add_child(child)
-
-      # move the child to the proper index
-      invoke(method: 'insertBefore', args: [child.id, children[index].id])
-      
-      # also swap the children in the children array
-      children.delete(child)
-      children.insert(index, child)
-    end
-
-    def configuration
-      super.merge(children: @children.map(&:configuration))
     end
   end
 

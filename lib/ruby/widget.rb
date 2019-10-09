@@ -1,5 +1,6 @@
 require_relative 'widget/button'
 require_relative 'widget/checkbox'
+require_relative 'widget/canvas'
 require_relative 'widget/date-picker'
 require_relative 'widget/dialog'
 require_relative 'widget/dropdown'

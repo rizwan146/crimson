@@ -6,6 +6,7 @@ require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
 require_relative 'lib/ruby/variable'
 require_relative 'lib/ruby/layout'
+require_relative 'lib/ruby/view-adapter'
 
 module Crimson
   @@webserver_enabled = false
