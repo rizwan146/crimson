@@ -87,17 +87,29 @@ module Crimson
     end
 
     def handle(event, *args)
-      events[event].call(*args)
+      @events[event].each { |handler| handler.call(*args) }
     end
 
-    def on(*events, &on_event)
-      events.each { |event| @events[event] = on_event }
+    def on(*events, &handler)
+      events.each do |event|
+        if @events[event]
+          @events[event] << handler
+        else
+          @events[event] = [handler]
+        end
+      end
 
       update(events: @events.keys)
     end
 
-    def un(*events)
-      events.each { |event| @events.delete(event) }
+    def un(*events_to_unlink, &handler)
+      events_to_unlink.each do |event|
+        if handler && @events[event]
+          @events[event].delete(handler)
+        elsif handler.nil? && @events[event]
+          @events.delete(event)
+        end
+      end
 
       update(events: @events.keys)
     end
@@ -179,6 +191,12 @@ module Crimson
 
     def remove(child)
       child.unbond if child.parent == self
+    end
+
+    def remove_all
+      while !children.empty?
+        remove(children.first)
+      end
     end
 
     def insert(index, child)

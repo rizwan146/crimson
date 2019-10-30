@@ -4,9 +4,10 @@ require_relative 'lib/ruby/base'
 require_relative 'lib/ruby/client-interactor'
 require_relative 'lib/ruby/object'
 require_relative 'lib/ruby/widget'
-require_relative 'lib/ruby/variable'
 require_relative 'lib/ruby/layout'
-require_relative 'lib/ruby/view-adapter'
+require_relative 'lib/ruby/model'
+require_relative 'lib/ruby/renderer'
+require_relative 'lib/ruby/listener'
 
 module Crimson
   @@webserver_enabled = false

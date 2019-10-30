@@ -1,5 +1,4 @@
 require_relative '../object'
-require_relative '../variable'
 
 module Crimson
   class Form < Widget
@@ -14,18 +13,9 @@ module Crimson
   class Input  < Widget
     def initialize(type, parent: app.root)
       super(parent: parent, tag: :input)
-      @value = Var.new("")
 
       set :type, type
       meta.push :value
-
-      on(:keyup) do |meta|
-        @value.set( meta[:value] )
-      end
-    end
-
-    def value
-      return @value.get
     end
   end
 end
