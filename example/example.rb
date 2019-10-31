@@ -10,24 +10,23 @@ main_widget = Crimson.Root do
   list = List(:ul)
   input = Input(:text)
   
-  model = Crimson::Model.new(["1","2", "3", "4"])
+  model = Crimson::Model::Base.new(["1","2", "3", "4"])
   
-  renderer = Crimson::Renderer.new(
+  renderer = Crimson::Renderer::Base.new(
     model: model,
     widget: list,
     updater: ->(model, widget) {
-      model.data.each { |item| widget.ListItem() { Text(item) } }
+      puts widget.class
+      model.data.each { |item| widget&.ListItem() { Label(item) } }
     }
   )
 
-  listener = Crimson::Listener.new(
+  listener = Crimson::Listener::Base.new(
     model: model,
     widget: input,
     events: [:keyup],
     updater: ->(model, widget, meta) {
       if meta[:event][:key] == "Enter"
-        widget&.remove_all
-        
         model.data.push( meta[:value] )
         model.force_commit
 

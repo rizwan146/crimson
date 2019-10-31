@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'lib/ruby/base'
-require_relative 'lib/ruby/client-interactor'
-require_relative 'lib/ruby/object'
-require_relative 'lib/ruby/widget'
-require_relative 'lib/ruby/layout'
+require_relative 'lib/ruby/application'
+require_relative 'lib/ruby/client'
+require_relative 'lib/ruby/element'
 require_relative 'lib/ruby/model'
 require_relative 'lib/ruby/renderer'
 require_relative 'lib/ruby/listener'
@@ -15,7 +13,7 @@ module Crimson
   @@webview_enabled = false
 
   def self.Root(&block)
-    widget = Widget.new
+    widget = Element::Division.new
     widget.instance_eval(&block)
 
     widget

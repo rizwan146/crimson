@@ -5,9 +5,9 @@ require 'websocket-eventmachine-server'
 require 'singleton'
 require 'thin'
 
-require_relative 'object'
-require_relative 'client-interactor'
+require_relative 'client'
 require_relative 'webserver'
+require_relative 'element/base'
 
 module Crimson
   class Application
@@ -59,17 +59,17 @@ module Crimson
     end
 
     def add_client(client)
-      raise TypeError unless client.is_a?(ClientInteractor)
+      raise TypeError unless client.is_a?(Client)
       @clients << client unless @clients.include?(client)
     end
 
     def remove_client(client)
-      raise TypeError unless client.is_a?(ClientInteractor)
+      raise TypeError unless client.is_a?(Client)
       @clients.delete(client)
     end
 
     def root
-      @root = Widget.new(parent: nil) if @root.nil?
+      @root = Crimson::Element::Division.new(parent: nil) if @root.nil?
       @root
     end
 
@@ -99,7 +99,7 @@ module Crimson
     def start_websocket
       WebSocket::EventMachine::Server
         .start(host: websocket_host, port: websocket_port) do |ws|
-          Crimson::ClientInteractor.new(ws, on_connect: on_connect, on_disconnect: on_disconnect)
+          Crimson::Client.new(ws, on_connect: on_connect, on_disconnect: on_disconnect)
         end
     end
   end

@@ -3,10 +3,10 @@
 require 'set'
 require 'websocket-eventmachine-server'
 require_relative 'publisher'
-require_relative 'base'
+require_relative 'application'
 
 module Crimson
-  class ClientInteractor
+  class Client
     public
 
     attr_reader :id, :socket
@@ -100,13 +100,13 @@ module Crimson
     end
 
     def observe(object)
-      raise TypeError unless object.is_a?(Crimson::Object)
+      raise TypeError unless object.is_a?(Crimson::Element::Base)
 
       object.add_subscriber(self, :on_object_published)
     end
 
     def stop_observing(object)
-      raise TypeError unless object.is_a?(Crimson::Object)
+      raise TypeError unless object.is_a?(Crimson::Element::Base)
 
       object.remove_subscriber(self)
     end
