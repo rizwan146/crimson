@@ -20,5 +20,6 @@ Crimson::Element.constants.select { |c| Crimson::Element.const_get(c).is_a? Clas
   Crimson::Element::Base.send(:define_method, element) do |*args, &block|
     child = Crimson::Element.const_get(element).new(*args, parent: self)
     Docile.dsl_eval(child, &block) if block
+    child
   end
 end

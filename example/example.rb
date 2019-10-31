@@ -16,8 +16,7 @@ main_widget = Crimson.Root do
     model: model,
     widget: list,
     updater: ->(model, widget) {
-      puts widget.class
-      model.data.each { |item| widget&.ListItem() { Label(item) } }
+      model.data.each { |item| widget.ListItem() { Label(item) } }
     }
   )
 
