@@ -13,7 +13,7 @@ module Crimson
   @@webview_enabled = false
 
   def self.Root(&block)
-    widget = Element::Division.new
+    widget = Element.new
     widget.instance_eval(&block)
 
     widget

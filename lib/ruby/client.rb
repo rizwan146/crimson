@@ -100,13 +100,13 @@ module Crimson
     end
 
     def observe(object)
-      raise TypeError unless object.is_a?(Crimson::Element::Base)
+      raise TypeError unless object.is_a?(Crimson::Element)
 
       object.add_subscriber(self, :on_object_published)
     end
 
     def stop_observing(object)
-      raise TypeError unless object.is_a?(Crimson::Element::Base)
+      raise TypeError unless object.is_a?(Crimson::Element)
 
       object.remove_subscriber(self)
     end

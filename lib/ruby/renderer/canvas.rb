@@ -3,7 +3,7 @@
 require_relative 'base'
 
 module Crimson
-  module Element
+  module Renderer
     class Context
       attr_reader :canvas, :type
 

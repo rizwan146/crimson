@@ -7,7 +7,7 @@ require 'thin'
 
 require_relative 'client'
 require_relative 'webserver'
-require_relative 'element/base'
+require_relative 'element'
 
 module Crimson
   class Application
@@ -69,7 +69,7 @@ module Crimson
     end
 
     def root
-      @root = Crimson::Element::Division.new(parent: nil) if @root.nil?
+      @root = Crimson::Element.new(parent: nil) if @root.nil?
       @root
     end
 

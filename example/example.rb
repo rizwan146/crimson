@@ -7,8 +7,8 @@ Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
 main_widget = Crimson.Root do
-  list = List(:ul)
-  input = Input(:text)
+  input = input {}
+  list = ul {}
   
   model = Crimson::Model::Base.new(["1","2", "3", "4"])
   
@@ -16,7 +16,7 @@ main_widget = Crimson.Root do
     model: model,
     widget: list,
     updater: ->(model, widget) {
-      model.data.each { |item| widget.ListItem() { Label(item) } }
+      model.data.each { |item| widget.li { div { set :innerHTML, item } } }
     }
   )
 
