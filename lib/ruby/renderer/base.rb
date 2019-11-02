@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'benchmark'
 
 module Crimson
@@ -25,7 +26,7 @@ module Crimson
       end
 
       def child_generator
-        [ updater&.call(model) ].select { |item| !item.nil? }
+        [updater&.call(model)].reject(&:nil?)
       end
 
       def update

@@ -9,28 +9,24 @@ Crimson.webserver_host = 'localhost'
 main_widget = Crimson.Root do
   input = input {}
   list = ul {}
-  
-  model = Crimson::Model::Base.new(["1","2", "3", "4"])
-  
+
+  model = Crimson::Model::Base.new(%w[1 2 3 4])
+
   renderer = Crimson::Renderer::List.new(
     model: model,
     view: list,
-    updater: ->(item) {
+    updater: lambda { |item|
       div { set :innerHTML, item }
     }
   )
 
-  listener = Crimson::Listener::Base.new(
+  listener = Crimson::Listener::Keyboard.new(
     model: model,
     view: input,
-    events: [:keyup],
-    updater: ->(model, widget, meta) {
-      if meta[:event][:key] == "Enter"
-        model.data.push( meta[:value] )
-        model.force_commit
-
-        widget.set(:value, "")
-      end
+    filters: [:Enter],
+    updater: lambda { |model, meta|
+      model.data.push(meta[:value])
+      model.force_commit
     }
   )
 

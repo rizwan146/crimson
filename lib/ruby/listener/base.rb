@@ -31,7 +31,7 @@ module Crimson
       end
 
       def update(meta)
-        updater&.call(model, view, meta)
+        updater&.call(model, meta)
       end
     end
   end

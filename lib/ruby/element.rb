@@ -26,7 +26,7 @@ module Crimson
       app.objects[id] = self
 
       @children = []
-      
+
       @channel = EventMachine::Channel.new
       @subscribers = {}
 
@@ -34,7 +34,7 @@ module Crimson
       @meta = [:value]
 
       @style = {}
-      @attributes = {:class => [self.class.name]}
+      @attributes = { class: [self.class.name] }
       @tag = tag
 
       bond(parent)
@@ -46,9 +46,9 @@ module Crimson
 
     def invoke(invokable)
       if !invokable.key?(:method)
-        raise(ArgumentError, "Expected invokable to include method name")
+        raise(ArgumentError, 'Expected invokable to include method name')
       elsif !invokable.key?(:args)
-        raise(ArgumentError, "Expected invokable to include method args")
+        raise(ArgumentError, 'Expected invokable to include method args')
       end
 
       emit invoke_configuration.merge(invokable)
@@ -77,7 +77,7 @@ module Crimson
     end
 
     def unbond
-      old_parent = self.parent
+      old_parent = parent
       self.parent = nil
 
       if old_parent
@@ -128,13 +128,13 @@ module Crimson
       update(style: style)
     end
 
-    def css_class()
-      return @attributes[:class]
+    def css_class
+      @attributes[:class]
     end
 
     def css_class=(css_class = [])
       class_attr = { class: css_class }
-      @attributes.merge!(class_attr);
+      @attributes.merge!(class_attr)
       update(attributes: class_attr)
     end
 
@@ -182,7 +182,7 @@ module Crimson
       unless index == children.length
         # move the child to the proper index
         invoke(method: 'insertBefore', args: [child.id, children[index].id])
-        
+
         # also swap the children in the children array
         children.delete(child)
         children.insert(index, child)
@@ -193,7 +193,7 @@ module Crimson
       remove(children[index])
       insert(index, child)
     end
-    
+
     def add_subscriber(subscriber, on_publish)
       super(subscriber, on_publish)
       children.each { |child| child.add_subscriber(subscriber, on_publish) }
@@ -203,7 +203,7 @@ module Crimson
       children.each { |child| child.remove_subscriber(subscriber) }
       super(subscriber)
     end
-    
+
     def add_child(child)
       return if children.include?(child)
 
@@ -212,32 +212,32 @@ module Crimson
 
     def remove_child(child)
       return unless children.include?(child)
-      
+
       children.delete(child)
     end
-    
-    [
-      :button,
-      :canvas,
-      :div,
-      :form,
-      :h1,
-      :h2,
-      :h3,
-      :h4,
-      :h5,
-      :h6,
-      :iframe,
-      :img,
-      :input,
-      :label,
-      :ul,
-      :ol,
-      :li,
-      :p,
-      :select,
-      :table,
-      :textarea
+
+    %i[
+      button
+      canvas
+      div
+      form
+      h1
+      h2
+      h3
+      h4
+      h5
+      h6
+      iframe
+      img
+      input
+      label
+      ul
+      ol
+      li
+      p
+      select
+      table
+      textarea
     ].each do |element|
       define_method(element) do |&block|
         child = Crimson::Element.new(tag: element, parent: self)
