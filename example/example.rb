@@ -2,37 +2,42 @@
 
 require_relative '../crimson'
 
-Crimson.logger.level = Logger::DEBUG
+Crimson.logger.level = Logger::WARN
 Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
+include Crimson
+
 main_widget = Crimson.Root do
+  
   form = form {
     set :onsubmit, "return false"
-    input = input {
+    
+    input {
       set :type, :text
       set :name, :data
     }
   }
+
   list = ul {}
 
-  model = Crimson::Model::Base.new(%w[1 2 3 4])
+  model = Model::List.new(%w[1 2 3 4])
 
-  renderer = Crimson::Renderer::List.new(
+  renderer = Renderer::List.new(
     model: model,
     view: list,
-    updater: lambda { |item|
-      div { set :innerHTML, item }
+    updater: lambda { |model|
+      div { set :innerHTML, model.data }
     }
   )
 
-  listener = Crimson::Listener::Base.new(
+  listener = Listener::Base.new(
     model: model,
     view: form,
     events: [:submit],
     updater: lambda { |model, meta|
-      model.data.push(meta[:data])
-      model.force_commit
+      model.push(meta[:data])
+      model.commit
     }
   )
 
