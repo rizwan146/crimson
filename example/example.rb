@@ -7,7 +7,13 @@ Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
 main_widget = Crimson.Root do
-  input = input {}
+  form = form {
+    set :onsubmit, "return false"
+    input = input {
+      set :type, :text
+      set :name, :data
+    }
+  }
   list = ul {}
 
   model = Crimson::Model::Base.new(%w[1 2 3 4])
@@ -20,13 +26,14 @@ main_widget = Crimson.Root do
     }
   )
 
-  listener = Crimson::Listener::Keyboard.new(
+  listener = Crimson::Listener::Base.new(
     model: model,
-    view: input,
-    filters: [:Enter],
+    view: form,
+    events: [:submit],
     updater: lambda { |model, meta|
-      model.data.push(meta[:value])
-      model.force_commit
+      puts meta
+      # model.data.push(meta[:value])
+      # model.force_commit
     }
   )
 
