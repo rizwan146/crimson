@@ -9,29 +9,29 @@ module Crimson
 
       public
 
-      attr_reader :model, :widget, :updater, :events
+      attr_reader :model, :view, :updater, :events
 
       def initialize(opts = {})
         self.model = opts[:model]
         self.events = opts[:events]
-        self.widget = opts[:widget]
+        self.view = opts[:view]
         self.updater = opts[:updater]
       end
 
-      def widget=(w)
+      def view=(w)
         events.each do |event|
-          widget&.un(event, &method(:update))
+          view&.un(event, &method(:update))
         end
 
-        @widget = w
+        @view = w
 
         events.each do |event|
-          widget&.on(event, &method(:update))
+          view&.on(event, &method(:update))
         end
       end
 
       def update(meta)
-        updater&.call(model, widget, meta)
+        updater&.call(model, view, meta)
       end
     end
   end

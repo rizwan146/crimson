@@ -12,17 +12,17 @@ main_widget = Crimson.Root do
   
   model = Crimson::Model::Base.new(["1","2", "3", "4"])
   
-  renderer = Crimson::Renderer::Base.new(
+  renderer = Crimson::Renderer::List.new(
     model: model,
-    widget: list,
-    updater: ->(model, widget) {
-      model.data.each { |item| widget.li { div { set :innerHTML, item } } }
+    view: list,
+    updater: ->(item) {
+      div { set :innerHTML, item }
     }
   )
 
   listener = Crimson::Listener::Base.new(
     model: model,
-    widget: input,
+    view: input,
     events: [:keyup],
     updater: ->(model, widget, meta) {
       if meta[:event][:key] == "Enter"
