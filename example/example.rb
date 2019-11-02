@@ -31,9 +31,8 @@ main_widget = Crimson.Root do
     view: form,
     events: [:submit],
     updater: lambda { |model, meta|
-      puts meta
-      # model.data.push(meta[:value])
-      # model.force_commit
+      model.data.push(meta[:data])
+      model.force_commit
     }
   )
 
