@@ -10,7 +10,7 @@ module Crimson
         default_opts = { events: [:keyup] }
         opts = default_opts.merge(opts)
         super(opts)
-        self.filters = opts[:filters].map { |key| key.to_sym }
+        self.filters = opts[:filters].map(&:to_sym)
       end
 
       def update(meta)

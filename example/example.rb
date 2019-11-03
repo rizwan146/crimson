@@ -8,8 +8,7 @@ Crimson.webserver_host = 'localhost'
 
 include Crimson
 
-main_widget = Crimson.Root do
-  
+main_widget = div {
   form = form {
     set :onsubmit, "return false"
     
@@ -42,12 +41,8 @@ main_widget = Crimson.Root do
   )
 
   model.commit
-end
+}
 
-Crimson.on_connect do |client|
-  client.create(main_widget)
-end
+Crimson.on_connect { |client| client.create(main_widget) }
 
-Crimson.on_disconnect do |client|
-  client.destroy(main_widget)
-end
+Crimson.on_disconnect { |client| client.destroy(main_widget) }

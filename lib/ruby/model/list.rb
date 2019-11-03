@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'base'
 
 module Crimson
@@ -13,7 +15,7 @@ module Crimson
         @data = d
       end
 
-      (Array.instance_methods - Object.instance_methods).each  do |method|
+      (Array.instance_methods - Object.instance_methods).each do |method|
         define_method(method) do |*args, &block|
           old_length = data.length
           result = data.send(method, *args, &block)
@@ -34,9 +36,9 @@ module Crimson
       end
 
       def commit
-        changed(data.any? { |model| model.changed? }) unless changed?
+        changed(data.any?(&:changed?)) unless changed?
         super
-        data.each { |model| model.commit }
+        data.each(&:commit)
       end
     end
   end

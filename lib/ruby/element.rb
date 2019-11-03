@@ -3,10 +3,12 @@
 require 'docile'
 require_relative 'application'
 require_relative 'publisher'
+require_relative 'html-dsl'
 
 module Crimson
   class Element
     include Crimson::Publisher
+    include Crimson::HtmlDsl
 
     protected
 
@@ -214,36 +216,6 @@ module Crimson
       return unless children.include?(child)
 
       children.delete(child)
-    end
-
-    %i[
-      button
-      canvas
-      div
-      form
-      h1
-      h2
-      h3
-      h4
-      h5
-      h6
-      iframe
-      img
-      input
-      label
-      ul
-      ol
-      li
-      p
-      select
-      table
-      textarea
-    ].each do |element|
-      define_method(element) do |&block|
-        child = Crimson::Element.new(tag: element, parent: self)
-        Docile.dsl_eval(child, &block) if block
-        child
-      end
     end
   end
 end

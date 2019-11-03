@@ -12,13 +12,6 @@ module Crimson
   @@websocket_enabled = true
   @@webview_enabled = false
 
-  def self.Root(&block)
-    widget = Element.new
-    widget.instance_eval(&block)
-
-    widget
-  end
-
   def self.on_connect(&block)
     Crimson::Application.instance.on_connect = block
   end
