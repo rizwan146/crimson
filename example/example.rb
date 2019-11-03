@@ -2,7 +2,7 @@
 
 require_relative '../crimson'
 
-Crimson.logger.level = Logger::WARN
+Crimson.logger.level = Logger::DEBUG
 Crimson.webserver_enabled = true
 Crimson.webserver_host = 'localhost'
 
@@ -26,7 +26,7 @@ main_widget = Crimson.Root do
   renderer = Renderer::List.new(
     model: model,
     view: list,
-    updater: lambda { |model|
+    generator: lambda { |model|
       div { set :innerHTML, model.data }
     }
   )
@@ -36,7 +36,7 @@ main_widget = Crimson.Root do
     view: form,
     events: [:submit],
     updater: lambda { |model, meta|
-      model.push(meta[:data])
+      model << meta[:data]
       model.commit
     }
   )

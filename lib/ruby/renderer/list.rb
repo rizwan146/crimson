@@ -16,10 +16,13 @@ module Crimson
         self.wrapper = opts[:wrapper]
       end
 
-      def child_generator
-        model.data.map do |item|
-          child = Element.new(tag: wrapper)
-          child.append(updater&.call(item))
+      def generate_children
+        model.data.map do |child_model|
+          child = nil
+          if child_model.changed?
+            child = Element.new(tag: wrapper)
+            child.append(generator&.call(child_model))
+          end
           child
         end
       end

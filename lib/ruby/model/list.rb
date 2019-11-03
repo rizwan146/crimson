@@ -32,6 +32,12 @@ module Crimson
       def []=(index, value)
         data[index].data = value
       end
+
+      def commit
+        changed(data.any? { |model| model.changed? }) unless changed?
+        super
+        data.each { |model| model.commit }
+      end
     end
   end
 end

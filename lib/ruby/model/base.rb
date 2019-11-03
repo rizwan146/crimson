@@ -26,6 +26,11 @@ module Crimson
         changed
         commit
       end
+
+      def ==(rhs)
+        return rhs.data == data if rhs.is_a?(self.class)
+        rhs == data
+      end
     end
   end
 end

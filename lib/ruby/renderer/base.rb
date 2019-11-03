@@ -7,16 +7,16 @@ module Crimson
     class Base
       protected
 
-      attr_writer :view, :updater
+      attr_writer :view, :generator
 
       public
 
-      attr_reader :model, :view, :updater
+      attr_reader :model, :view, :generator
 
       def initialize(opts = {})
         self.model = opts[:model]
         self.view = opts[:view]
-        self.updater = opts[:updater]
+        self.generator = opts[:generator]
       end
 
       def model=(m)
@@ -25,16 +25,19 @@ module Crimson
         @model&.add_observer(self)
       end
 
-      def child_generator
-        [updater&.call(model)].reject(&:nil?)
+      def generate_children
+        [generator&.call(model)]
       end
 
       def update
-        child_generator.each_with_index(&method(:refresh))
+        children = generate_children
+        children.each_with_index(&method(:refresh))
       end
 
       def refresh(child, index)
-        index < view.children.length ? view.replace(index, child) : view.append(child)
+        unless child.nil?
+          index < view.children.length ? view.replace(index, child) : view.append(child)
+        end
       end
     end
   end
