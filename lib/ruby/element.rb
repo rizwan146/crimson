@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
+require_relative 'html'
 require_relative 'model'
-require_relative 'node'
 
 module Crimson
   class Element
-    include Model
-    include Node
+    protected
 
-    attr_reader :id, :tag
+    include Html
+
+    public
+
+    include Model
 
     def initialize(opts = {})
       super()
 
-      @id = opts[:id]
-      @tag = opts[:tag] || :div
-
-      local.merge!(opts[:attributes] || {})
+      local.merge!(opts)
     end
 
     def [](attribute)
@@ -31,18 +31,13 @@ module Crimson
       end
     end
 
-    def attributes=(attributes = {})
+    def set(attributes = {})
       local.merge!(attributes)
+      local.compact!
     end
 
-    def to_json(*_args)
-      {
-        id: id,
-        tag: tag,
-        attributes: attributes,
-        children: children.map(:id),
-        parent: parent.id
-      }
+    def minimal
+      { id: master[:id] }
     end
   end
 end

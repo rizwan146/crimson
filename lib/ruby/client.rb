@@ -24,5 +24,15 @@ module Crimson
     def on_commit(changes)
       super
     end
+
+    def observe(element)
+      write(element.master.merge(action: :create))
+      element.add_observer(self)
+    end
+
+    def unobserve(element)
+      element.remove_observer(self)
+      write(element.minimal.merge(action: :destroy))
+    end
   end
 end

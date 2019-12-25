@@ -2,47 +2,28 @@
 
 require_relative '../crimson'
 
-Crimson.logger.level = Logger::DEBUG
-Crimson.webserver_enabled = true
-Crimson.webserver_host = 'localhost'
-
 include Crimson
 
-main_widget = div {
-  form = form {
-    set :onsubmit, "return false"
+server = Server.new
+
+main = Html.builder do
+  Div {
+    Label(innerHTML: "Don't press this button...")
     
-    input {
-      set :type, :text
-      set :name, :data
+    Button {
+      
     }
   }
+end
 
-  list = ul {}
+server.on_connect do |client|
+  puts "connected"
 
-  model = Model::List.new(%w[1 2 3 4])
+  client.observe(main)
+end
 
-  renderer = Renderer::List.new(
-    model: model,
-    view: list,
-    generator: lambda { |model|
-      div { set :innerHTML, model.data }
-    }
-  )
+server.on_disconnect do |client|
+  puts "disconnected"
+end
 
-  listener = Listener::Base.new(
-    model: model,
-    view: form,
-    events: [:submit],
-    updater: lambda { |model, meta|
-      model << meta[:data]
-      model.commit
-    }
-  )
-
-  model.commit
-}
-
-Crimson.on_connect { |client| client.create(main_widget) }
-
-Crimson.on_disconnect { |client| client.destroy(main_widget) }
+server.run

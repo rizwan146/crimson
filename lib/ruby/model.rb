@@ -23,7 +23,7 @@ module Crimson
     end
 
     def notify_observers
-      observers.each { |_client, handler| handler.call(changes) }
+      observers.each { |_observer, handler| handler.call(changes) }
     end
 
     def changed?
@@ -33,7 +33,7 @@ module Crimson
     def changes
       keys = master.keys | local.keys
       diff = {}
-      
+
       keys.each do |k|
         v1 = master[k]
         v2 = local[k]
@@ -53,13 +53,13 @@ module Crimson
         apply_changes!
       end
     end
-    
+
     def apply_changes!
       revisions << local.dup
     end
 
     def reload!
-      @local = master
+      @local = master.dup
     end
 
     def rollback!

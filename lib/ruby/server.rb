@@ -4,11 +4,17 @@ require 'thin'
 require 'websocket-eventmachine-server'
 require_relative 'client'
 require_relative 'webserver'
+require_relative 'element_pool'
 
 module Crimson
   class Server
+    attr_reader :element_pool
+
     def initialize(opts = {})
+      super()
+
       @opts = opts || {}
+      @element_pool = ElementPool.new
     end
 
     def host
