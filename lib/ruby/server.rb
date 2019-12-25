@@ -4,17 +4,14 @@ require 'thin'
 require 'websocket-eventmachine-server'
 require_relative 'client'
 require_relative 'webserver'
-require_relative 'element_pool'
 
 module Crimson
   class Server
-    attr_reader :element_pool
+    attr_reader :clients
 
     def initialize(opts = {})
-      super()
-
       @opts = opts || {}
-      @element_pool = ElementPool.new
+      @clients = {}
     end
 
     def host
@@ -49,15 +46,28 @@ module Crimson
 
     def start_websocket
       WebSocket::EventMachine::Server.start(host: host, port: websocket_port) do |ws|
-        client = Client.new(ws)
+        id = generate_client_id
+        client = Client.new(id, ws)
 
-        ws.onopen { @on_connect.call(client) }
-        ws.onclose { @on_disconnect.call(client) }
+        ws.onopen {
+          clients[id] = client
+          @on_connect.call(client)
+        }
+
+        ws.onclose {
+          @on_disconnect.call(client)
+          clients.delete(id)
+        }
       end
     end
 
     def websocket_port
       port + 1
+    end
+
+    def generate_client_id
+      time_ms = Time.now.to_f * 1000.0
+      :"client_#{time_ms.to_i}"
     end
   end
 end

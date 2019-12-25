@@ -1,12 +1,10 @@
-import CrimsonApplication from './lib/javascript/Application.js'
+import Application from './lib/javascript/Application.js'
 
-let crimsonApplications = [];
+let __crimson_apps__ = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    let applications = document.getElementsByTagName('crimson');
-
-    for (let i = 0; i < applications.length; i++) {
-        let application = applications[i];
-        crimsonApplications.push( new CrimsonApplication(application) );
-    }
+    const applications = [... document.getElementsByTagName('crimson')]
+    applications.forEach(function(application, index){
+        __crimson_apps__.push( new Application(application) );
+    });
 });
