@@ -1,21 +1,24 @@
 # frozen_string_literal: true
 
 require_relative 'model_change'
+require_relative 'utilities'
 
 module Crimson
-  module Model
-    attr_reader :observers, :revisions, :local
+  class Model < SimpleDelegator
+    attr_reader :observers, :revisions, :local, :revision_number
 
     def initialize
-      super if defined?(super)
-
       @observers = {}
-      @revisions = [{}]
-      @local = {}
+      @revisions = [Hashie::Mash.new]
+      @revision_number = 1
+      @max_number_of_revisions = 2
+      @local = Hashie::Mash.new
+
+      super(local)
     end
 
     def add_observer(observer, handler = :on_commit)
-      observers[observer] = observers.method(handler)
+      observers[observer] = observer.method(handler)
     end
 
     def remove_observer(observer)
@@ -23,7 +26,11 @@ module Crimson
     end
 
     def notify_observers
-      observers.each { |_observer, handler| handler.call(changes) }
+      observers.each { |_observer, handler| handler.call(self) }
+    end
+
+    def modify(modifications = {})
+      local.merge(modifications)
     end
 
     def changed?
@@ -32,7 +39,7 @@ module Crimson
 
     def changes
       keys = master.keys | local.keys
-      diff = {}
+      diff = Hashie::Mash.new
 
       keys.each do |k|
         v1 = master[k]
@@ -41,6 +48,10 @@ module Crimson
       end
 
       diff
+    end
+
+    def new_changes
+      changes.transform_values{ |change| change.new_value }
     end
 
     def master
@@ -55,7 +66,9 @@ module Crimson
     end
 
     def apply_changes!
-      revisions << local.dup
+      revisions << Utilities.deep_copy(local)
+      @revision_number += 1
+      revisions.shift if revisions.length > @max_number_of_revisions
     end
 
     def reload!
