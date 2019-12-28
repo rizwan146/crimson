@@ -7,7 +7,13 @@ require_relative '../crimson'
 server = Crimson::Server.new
 
 object = Crimson::Object.new("div")
-object2 = Crimson::Object.new("div")
+child = Crimson::Object.new("div")
+
+child.style = {
+  "background-color": "green",
+  "height": "100px",
+  "width": "100px",
+}
 
 object.style = {
   "color": "white",
@@ -18,12 +24,14 @@ object.style = {
 
 object.innerHTML = "Hello World"
 
-object.commit!
+object.add(child)
 
 server.on_connect do |client|
   puts "#{client.id} connected"
 
   client.observe(object)
+
+  object.commit_tree!
 end
 
 server.on_disconnect do |client|

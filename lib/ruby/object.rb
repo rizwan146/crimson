@@ -58,10 +58,10 @@ module Crimson
     end
 
     def commit_tree!
-      node.each do |sub_node|
+      node.postordered_each do |sub_node|
         object = sub_node.content
         if object.changed?
-          observers.each do |observer|
+          observers.keys.each do |observer|
             observer.observe(object) unless observer.observing?(object)
             observer.on_commit(object)
           end

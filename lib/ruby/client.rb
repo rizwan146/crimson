@@ -26,23 +26,31 @@ module Crimson
     end
 
     def observe(object)
-      write(
-        action: :create,
-        id: object.id,
-        tag: object.tag,
-        changes: object.master
-      )
+      object.node.postordered_each do |sub_node|
+        observable = sub_node.content
 
-      object.add_observer(self)
+        write(
+          action: :create,
+          id: observable.id,
+          tag: observable.tag,
+          changes: observable.master
+        )
+
+        observable.add_observer(self)
+      end
     end
 
     def unobserve(object)
-      object.remove_observe(self)
+      object.node.postordered_each do |sub_node|
+        observable = sub_node.content
 
-      write(
-        action: :destroy,
-        id: object.id
-      )
+        observable.remove_observer(self)
+
+        write(
+          action: :destroy,
+          id: observable.id
+        )
+      end
     end
 
     def observing?(object)
@@ -51,6 +59,14 @@ module Crimson
 
     def ==(other)
       other.is_a?(Client) && other.id == id
+    end
+
+    def eql?(other)
+      self == other
+    end
+
+    def hash
+      id.hash
     end
   end
 end
