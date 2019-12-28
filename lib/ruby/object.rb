@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'tree'
+require 'hashie'
 require_relative 'model'
 require_relative 'utilities'
 
 module Crimson
   class Object < Model
-    attr_reader :id, :tag, :node
+    attr_reader :id, :tag, :node, :event_handlers
 
     def initialize(tag)
       super()
@@ -14,8 +15,28 @@ module Crimson
       @id = :"object_#{Utilities.generate_id}"
       @tag = tag.to_sym
       @node = Tree::TreeNode.new(id, self)
+      @event_handlers = Hashie::Mash.new
+    end
 
-      puts("new object with id #{@id}")
+    def on(event, &block)
+      raise ArgumentError unless block_given?
+
+      event_handlers[event] = [] unless event_handlers[event]
+      event_handlers[event] << block
+
+      self[:events] = event_handlers.keys
+    end
+
+    def un(event, &block)
+      raise ArgumentError unless event_handlers.key?(event)
+      
+      event_handlers[event].delete(block) if block_given?
+        
+      if event_handlers[event].empty? || block_given?
+        event_handlers.delete(event)
+      end
+
+      self[:events] = event_handlers.keys
     end
 
     def parent

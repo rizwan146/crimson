@@ -21,17 +21,14 @@ object.style = {
   "height": "100vh",
   "width": "100vw"
 }
-
 object.innerHTML = "Hello World"
-
 object.add(child)
+object.commit_tree!
 
 server.on_connect do |client|
   puts "#{client.id} connected"
 
   client.observe(object)
-
-  object.commit_tree!
 end
 
 server.on_disconnect do |client|

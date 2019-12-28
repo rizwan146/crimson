@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'hashie'
 require_relative 'model_change'
 require_relative 'utilities'
 
