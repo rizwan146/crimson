@@ -26,20 +26,24 @@ module Crimson
       observers.delete(observer)
     end
 
-    def notify_observers
-      observers.each { |_observer, handler| handler.call(self) }
+    def notify_observers(changes)
+      observers.each { |_observer, handler| handler.call(self, changes) }
     end
 
     def modify(modifications = {})
       local.merge(modifications)
     end
 
-    def changed?
-      local != master
+    def changed?(*keys)
+      if keys.empty?
+        local != master
+      else
+        keys.map { |key| local[key] != master[key] }.any?(true)
+      end
     end
 
-    def changes
-      keys = master.keys | local.keys
+    def changes(*keys)
+      keys = ( master.keys | local.keys ) if keys.empty?
       diff = Hashie::Mash.new
 
       keys.each do |k|
@@ -51,29 +55,35 @@ module Crimson
       diff
     end
 
-    def new_changes
-      changes.transform_values{ |change| change.new_value }
+    def new_changes(*keys)
+      changes(*keys).transform_values(&:new_value)
     end
 
     def master
       revisions.last
     end
 
-    def commit!
-      if changed?
-        notify_observers
-        apply_changes!
+    def commit!(*keys)
+      if changed?(*keys)
+        notify_observers(new_changes(*keys))
+        apply_changes!(*keys)
       end
     end
 
-    def apply_changes!
-      revisions << Utilities.deep_copy(local)
+    def apply_changes!(*keys)
+      if keys.empty?
+        revisions << Utilities.deep_copy(local)
+      else
+        revisions << Utilities.deep_copy(master)
+        keys.each { |key| master[key] = Utilities.deep_copy(local[key]) }
+      end
+
       @revision_number += 1
       revisions.shift if revisions.length > @max_number_of_revisions
     end
 
     def reload!
-      @local = master.dup
+      @local = Utilities.deep_copy(master)
     end
 
     def rollback!

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'hashie'
 require_relative '../crimson'
 
 
@@ -14,6 +13,10 @@ child.style = {
   "height": "100px",
   "width": "100px",
 }
+
+child.on("click") do |data|
+  puts data.to_s
+end
 
 object.style = {
   "color": "white",

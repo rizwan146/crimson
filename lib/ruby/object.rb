@@ -18,6 +18,12 @@ module Crimson
       @event_handlers = Hashie::Mash.new
     end
 
+    def on_event(message)
+      raise ArgumentError unless event_handlers.key?(message.event)
+
+      event_handlers[message.event].each { |functor| functor.call(message.data) }
+    end
+
     def on(event, &block)
       raise ArgumentError unless block_given?
 
@@ -25,6 +31,7 @@ module Crimson
       event_handlers[event] << block
 
       self[:events] = event_handlers.keys
+      commit!(:events)
     end
 
     def un(event, &block)
@@ -32,11 +39,12 @@ module Crimson
       
       event_handlers[event].delete(block) if block_given?
         
-      if event_handlers[event].empty? || block_given?
+      if event_handlers[event].empty? || !block_given?
         event_handlers.delete(event)
       end
 
       self[:events] = event_handlers.keys
+      commit!(:events)
     end
 
     def parent
@@ -44,14 +52,14 @@ module Crimson
     end
 
     def parent=(new_parent)
-      raise ArgumentError unless new_parent.nil? || new_parent.is_a?(Object)
+      raise ArgumentError unless new_parent.nil? || new_parent.is_a?(Crimson::Object)
 
       parent&.remove!(self)
       new_parent&.add(self)
     end
 
     def add(child, at_index = -1)
-      raise ArgumentError unless child.is_a?(Object)
+      raise ArgumentError unless child.is_a?(Crimson::Object)
 
       node.add(child.node, at_index)
 
@@ -59,7 +67,7 @@ module Crimson
     end
 
     def remove!(child)
-      raise ArgumentError unless child.is_a?(Object)
+      raise ArgumentError unless child.is_a?(Crimson::Object)
 
       node.remove!(child.node)
 
@@ -78,14 +86,18 @@ module Crimson
       node.root.content
     end
 
-    def commit_tree!
+    def commit_tree!(*keys)
       node.postordered_each do |sub_node|
         object = sub_node.content
+        
         if object.changed?
+          changes = object.new_changes(*keys)
+          
           observers.keys.each do |observer|
             observer.observe(object) unless observer.observing?(object)
-            observer.on_commit(object)
+            observer.on_commit(object, changes)
           end
+
           object.apply_changes!
         end
       end
