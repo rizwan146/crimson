@@ -76,5 +76,9 @@ module Crimson
     def title=(window_title)
       title.innerHTML = window_title
     end
+
+    def buttons
+      [hide_button, resize_button, close_button]
+    end
   end
 end

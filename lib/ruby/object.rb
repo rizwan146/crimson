@@ -84,6 +84,7 @@ module Crimson
       node.add(child.node, at_index)
 
       self[:children] = children.map(&:id)
+
       added_children << child
     end
 
@@ -94,7 +95,19 @@ module Crimson
       node.remove!(child.node)
 
       self[:children] = children.map(&:id)
+
       removed_children << child
+    end
+
+    def move(child, at_index)
+      raise ArgumentError unless child.is_a?(Crimson::Object)
+      raise ArgumentError unless children.include?(child)
+
+      remove(child)
+      add(child, at_index)
+
+      added_children.delete(child)
+      removed_children.delete(child)
     end
 
     def siblings

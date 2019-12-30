@@ -10,9 +10,11 @@ server = Crimson::Server.new
 desktop = Crimson::Desktop.new
 desktop.style.backgroundColor = "white"
 
-window = desktop.create_window("Login")
-window.titlebar.close_button.hide
-window.titlebar.hide_button.hide
+window = desktop.create_window("Login", "400px", "200px")
+window.titlebar.buttons.each(&:hide)
+window.resizable = false
+
+window2 = desktop.create_window("Test")
 
 desktop.commit_tree!
 

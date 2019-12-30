@@ -11,11 +11,12 @@ require_relative 'bottom_resizer'
 module Crimson
   class Window < Crimson::Object
     attr_reader :offset, :titlebar, :previous_dimensions
-    attr_reader :left_resizer, :right_resizer, :top_resizer, :bottom_resizer
+    attr_reader :resizable, :left_resizer, :right_resizer, :top_resizer, :bottom_resizer
 
     def initialize(title, width = '800px', height = '600px')
       super(:div)
 
+      @resizable = true
       @offset = Hashie::Mash.new
       @previous_dimensions = Hashie::Mash.new
 
@@ -57,11 +58,18 @@ module Crimson
         "background-color": 'white',
         "box-shadow": '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
       }
+
+      on("mousedown", method(:on_mousedown))
     end
 
     def on_dragstart(data)
       offset.top = style.top.delete_suffix('px').to_i - data.clientY
       offset.left = style.left.delete_suffix('px').to_i - data.clientX
+    end
+
+    def on_mousedown(data)
+      parent.move(self, -1)
+      parent.commit_tree!(:children)
     end
 
     def maximized?
@@ -72,12 +80,26 @@ module Crimson
       !maximized?
     end
 
+    def resizable?
+      resizable
+    end
+
+    def resizable=(bool)
+      @resizable = bool
+
+      if resizable?
+        resizers.each(&:enable)
+      else
+        resizers.each(&:disable)
+      end
+    end
+
     def resizers
       [left_resizer, right_resizer, top_resizer, bottom_resizer]
     end
 
     def maximize
-      resizers.each(&:disable)
+      self.resizable = false
 
       previous_dimensions.top = style.top.dup
       previous_dimensions.left = style.left.dup
@@ -96,7 +118,7 @@ module Crimson
       style.width = previous_dimensions.width.dup
       style.height = previous_dimensions.height.dup
 
-      resizers.each(&:enable)
+      self.resizable = true
     end
   end
 end
