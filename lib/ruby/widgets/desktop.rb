@@ -22,34 +22,22 @@ module Crimson
       self.ondragover = 'event.preventDefault();'
       self.ondrop = 'event.preventDefault();'
 
-      on('drop', &method(:on_drop))
+      on('drop', method(:on_drop))
     end
 
     def on_drop(data)
-      object = node[data.target.to_sym].content
-      object.style.left = "#{data.clientX + object.offset.left}px"
-      object.style.top = "#{data.clientY + object.offset.top}px"
-      object.commit!
+      window = find_descendant(data.target.to_sym).parent
+
+      unless window.nil?
+        window.style.left = "#{data.clientX + window.offset.left}px"
+        window.style.top = "#{data.clientY + window.offset.top}px"
+        window.commit!
+      end
     end
 
     def create_window(*args)
       window = Crimson::Window.new(*args)
       add(window)
-
-      window.titlebar.close_button.on('click') do |_data|
-        remove(window)
-        commit_tree!
-      end
-
-      window.titlebar.resize_button.on('click') do |_data|
-        if window.maximized?
-          window.minimize
-        else
-          window.maximize
-        end
-        window.commit!
-      end
-
       window
     end
   end

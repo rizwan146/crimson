@@ -18,10 +18,14 @@ module Crimson
 
     def on_message(message, type)
       message = Hashie::Mash.new(JSON.parse(message))
-      
-      case message.action
-      when "event"
-        notification_bus.notify(message)
+
+      begin
+        case message.action
+        when "event"
+          notification_bus.notify(message)
+        end
+      rescue ArgumentError => e
+        puts e
       end
     end
 
@@ -38,9 +42,7 @@ module Crimson
     end
 
     def observe(object)
-      object.node.postordered_each do |subnode|
-        observable = subnode.content
-
+      object.postordered_each do |observable|
         write(
           action: :create,
           id: observable.id,
@@ -54,9 +56,7 @@ module Crimson
     end
 
     def unobserve(object)
-      object.node.postordered_each do |subnode|
-        observable = subnode.content
-
+      object.postordered_each do |observable|
         observable.remove_observer(self)
         notification_bus.unregister(observable)
 

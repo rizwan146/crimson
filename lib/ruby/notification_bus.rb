@@ -25,7 +25,9 @@ module Crimson
     end
 
     def notify(message)
-      raise ArgumentError unless notification_handlers.key?(message.id)
+      unless notification_handlers.key?(message.id)
+        raise ArgumentError, "[NotificationBus] Trying to notify unregistered '#{message.id}'."
+      end
 
       notification_handlers[message.id].call(message)
     end

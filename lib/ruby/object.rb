@@ -2,6 +2,7 @@
 
 require 'tree'
 require 'hashie'
+require 'set'
 require_relative 'model'
 require_relative 'utilities'
 
@@ -17,32 +18,35 @@ module Crimson
       @node = Tree::TreeNode.new(id, self)
       @event_handlers = Hashie::Mash.new
 
-      @added_children = []
-      @removed_children = []
+      @added_children = Set.new
+      @removed_children = Set.new
     end
 
     def on_event(message)
-      raise ArgumentError unless event_handlers.key?(message.event)
+      unless event_handlers.key?(message.event)
+        raise ArgumentError, "[Object] Trying to handle unknown event '#{message.event}' for '#{id}'."
+      end
 
       event_handlers[message.event].each { |functor| functor.call(message.data) }
     end
 
-    def on(event, &block)
-      raise ArgumentError unless block_given?
+    def on(event, handler = nil, &block)
+      raise ArgumentError unless handler.nil? || handler.is_a?(Method) || handler.is_a?(Proc)
 
       event_handlers[event] = [] unless event_handlers[event]
-      event_handlers[event] << block
+      event_handlers[event] << handler unless handler.nil?
+      event_handlers[event] << block if block_given?
 
       self[:events] = event_handlers.keys
       commit!(:events)
     end
 
-    def un(event, &block)
+    def un(event, handler = nil)
       raise ArgumentError unless event_handlers.key?(event)
       
-      event_handlers[event].delete(block) if block_given?
-        
-      if event_handlers[event].empty? || !block_given?
+      event_handlers[event].delete(handler) if handler
+
+      if event_handlers[event].empty? || handler.nil?
         event_handlers.delete(event)
       end
 
@@ -96,10 +100,8 @@ module Crimson
     def commit_tree!(*keys)
       # TODO: Unsure if this algorithm works for moved objects
       # eg. added, removed, then added again, under the same commit.
-      
-      node.breadth_each do |subnode|
-        object = subnode.content
-        
+
+      breadth_each do |object|
         observers.keys.each do |observer|
           object.added_children.each do |child|
             observer.observe(child)
@@ -114,6 +116,28 @@ module Crimson
         object.removed_children.clear
         object.commit!(*keys)
       end
+    end
+
+    def breadth_each
+      node.breadth_each do |subnode|
+        yield(subnode.content)
+      end
+    end
+
+    def postordered_each
+      node.postordered_each do |subnode|
+        yield(subnode.content)
+      end
+    end
+
+    def preordered_each
+      node.preordered_each do |subnode|
+        yield(subnode.content)
+      end
+    end
+
+    def find_descendant(descendent_id)
+      breadth_each { |descendent| return descendent if descendent_id == descendent.id }
     end
 
     def inspect
