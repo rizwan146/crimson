@@ -38,8 +38,8 @@ module Crimson
     end
 
     def observe(object)
-      object.node.postordered_each do |sub_node|
-        observable = sub_node.content
+      object.node.postordered_each do |subnode|
+        observable = subnode.content
 
         write(
           action: :create,
@@ -54,8 +54,8 @@ module Crimson
     end
 
     def unobserve(object)
-      object.node.postordered_each do |sub_node|
-        observable = sub_node.content
+      object.node.postordered_each do |subnode|
+        observable = subnode.content
 
         observable.remove_observer(self)
         notification_bus.unregister(observable)

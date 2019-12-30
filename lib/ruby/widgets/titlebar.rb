@@ -2,7 +2,7 @@ require_relative '../object'
 
 module Crimson
   class Titlebar < Crimson::Object
-    attr_reader :title, :hide, :resize, :close
+    attr_reader :title, :hide_button, :resize_button, :close_button
 
     def initialize(window_title)
       super(:div)
@@ -18,52 +18,52 @@ module Crimson
       }
       add(title)
 
-      @hide = Object.new(:img)
-      hide.src = "./icons/hide.png"
-      hide.style = {
+      @hide_button = Object.new(:img)
+      hide_button.src = "./icons/hide.png"
+      hide_button.style = {
         "background-color": "rgba(0, 0, 0, 0.0)",
         "padding": "10px 20px"
       }
-      hide.on("mouseenter") do |data|
-        hide.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
-        hide.commit!
+      hide_button.on("mouseenter") do |data|
+        hide_button.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+        hide_button.commit!
       end
-      hide.on("mouseleave") do |data|
-        hide.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
-        hide.commit!
+      hide_button.on("mouseleave") do |data|
+        hide_button.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
+        hide_button.commit!
       end
-      add(hide)
+      add(hide_button)
 
-      @resize = Object.new(:img)
-      resize.src = "./icons/resize.png"
-      resize.style = {
+      @resize_button = Object.new(:img)
+      resize_button.src = "./icons/resize.png"
+      resize_button.style = {
         "padding": "8px 16px"
       }
-      resize.on("mouseenter") do |data|
-        resize.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
-        resize.commit!
+      resize_button.on("mouseenter") do |data|
+        resize_button.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+        resize_button.commit!
       end
-      resize.on("mouseleave") do |data|
-        resize.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
-        resize.commit!
+      resize_button.on("mouseleave") do |data|
+        resize_button.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
+        resize_button.commit!
       end
-      add(resize)
+      add(resize_button)
 
-      @close = Object.new(:img)
-      close.src = "./icons/close.png"
-      close.style = {
+      @close_button = Object.new(:img)
+      close_button.src = "./icons/close.png"
+      close_button.style = {
         "border-radius": "0 10px 0 0",
         "padding": "10px 20px"
       }
-      close.on("mouseenter") do |data|
-        close.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
-        close.commit!
+      close_button.on("mouseenter") do |data|
+        close_button.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+        close_button.commit!
       end
-      close.on("mouseleave") do |data|
-        close.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
-        close.commit!
+      close_button.on("mouseleave") do |data|
+        close_button.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
+        close_button.commit!
       end
-      add(close)
+      add(close_button)
 
       self.style = {
         "border-radius": "10px 10px 0 0",

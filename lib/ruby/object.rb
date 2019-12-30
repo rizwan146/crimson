@@ -7,7 +7,7 @@ require_relative 'utilities'
 
 module Crimson
   class Object < Model
-    attr_reader :id, :tag, :node, :event_handlers
+    attr_reader :id, :tag, :node, :event_handlers, :added_children, :removed_children
 
     def initialize(tag)
       super()
@@ -16,6 +16,9 @@ module Crimson
       @tag = tag.to_sym
       @node = Tree::TreeNode.new(id, self)
       @event_handlers = Hashie::Mash.new
+
+      @added_children = []
+      @removed_children = []
     end
 
     def on_event(message)
@@ -54,24 +57,28 @@ module Crimson
     def parent=(new_parent)
       raise ArgumentError unless new_parent.nil? || new_parent.is_a?(Crimson::Object)
 
-      parent&.remove!(self)
+      parent&.remove(self)
       new_parent&.add(self)
     end
 
     def add(child, at_index = -1)
       raise ArgumentError unless child.is_a?(Crimson::Object)
+      raise ArgumentError if children.include?(child)
 
       node.add(child.node, at_index)
 
       self[:children] = children.map(&:id)
+      added_children << child
     end
 
-    def remove!(child)
+    def remove(child)
       raise ArgumentError unless child.is_a?(Crimson::Object)
-
+      raise ArgumentError unless children.include?(child)
+      
       node.remove!(child.node)
 
       self[:children] = children.map(&:id)
+      removed_children << child
     end
 
     def siblings
@@ -87,19 +94,25 @@ module Crimson
     end
 
     def commit_tree!(*keys)
-      node.postordered_each do |sub_node|
-        object = sub_node.content
+      # TODO: Unsure if this algorithm works for moved objects
+      # eg. added, removed, then added again, under the same commit.
+      
+      node.breadth_each do |subnode|
+        object = subnode.content
         
-        if object.changed?
-          changes = object.new_changes(*keys)
-          
-          observers.keys.each do |observer|
-            observer.observe(object) unless observer.observing?(object)
-            observer.on_commit(object, changes)
+        observers.keys.each do |observer|
+          object.added_children.each do |child|
+            observer.observe(child)
           end
 
-          object.apply_changes!
+          object.removed_children.each do |child|
+            observer.unobserve(child)
+          end
         end
+
+        object.added_children.clear
+        object.removed_children.clear
+        object.commit!(*keys)
       end
     end
 
@@ -109,6 +122,18 @@ module Crimson
 
     def to_s
       id.to_s
+    end
+
+    def ==(other)
+      other.is_a?(Object) && other.id == id
+    end
+
+    def eql?(other)
+      self == other
+    end
+
+    def hash
+      id.hash
     end
   end
 end

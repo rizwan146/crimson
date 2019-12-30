@@ -6,12 +6,13 @@ require_relative 'titlebar'
 
 module Crimson
   class Window < Crimson::Object
-    attr_reader :offset, :titlebar
+    attr_reader :offset, :titlebar, :previous_dimensions
 
     def initialize(title, width = "800px", height = "600px")
       super(:div)
 
       @offset = Hashie::Mash.new
+      @previous_dimensions = Hashie::Mash.new
       @titlebar = Titlebar.new(title)
       add(titlebar)
 
@@ -20,6 +21,8 @@ module Crimson
         "top": "0px",
         "height": height,
         "width": width,
+        "min-height": "200px",
+        "min-width": "400px",
         "position": "absolute",
         "background-color": "white",
         "border-radius": "10px",
@@ -33,6 +36,33 @@ module Crimson
     def on_dragstart(data)
       offset.top = style.top.delete_suffix("px").to_i - data.clientY
       offset.left = style.left.delete_suffix("px").to_i - data.clientX
+    end
+
+    def maximized?
+      style.height == "100vh" && style.width == "100vw"
+    end
+
+    def minimized?
+      !maximized?
+    end
+
+    def maximize
+      previous_dimensions.top = style.top.dup
+      previous_dimensions.left = style.left.dup
+      previous_dimensions.width = style.width.dup
+      previous_dimensions.height = style.height.dup
+
+      style.top = "0px"
+      style.left = "0px"
+      style.width = "100vw"
+      style.height = "100vh"
+    end
+
+    def minimize
+      style.top = previous_dimensions.top.dup
+      style.left =  previous_dimensions.left.dup
+      style.width = previous_dimensions.width.dup
+      style.height =  previous_dimensions.height.dup
     end
   end
 end

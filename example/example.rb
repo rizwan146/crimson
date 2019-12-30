@@ -9,9 +9,7 @@ server = Crimson::Server.new
 
 desktop = Crimson::Desktop.new
 desktop.style.backgroundColor = "white"
-
-window = Crimson::Window.new("My Window")
-desktop.add(window)
+window = desktop.create_window("New Window")
 
 desktop.commit_tree!
 
