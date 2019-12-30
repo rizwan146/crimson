@@ -24,7 +24,7 @@ module Crimson
       titlebar.on('dragstart', method(:on_dragstart))
       titlebar.resize_button.on('click') do |_data|
         maximized? ? minimize : maximize
-        commit!
+        commit_tree!
       end
       titlebar.close_button.on('click') do |_data|
         old_parent = parent

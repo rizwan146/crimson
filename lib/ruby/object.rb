@@ -20,6 +20,18 @@ module Crimson
 
       @added_children = Set.new
       @removed_children = Set.new
+
+      self.style = {}
+
+      show
+    end
+
+    def hide
+      style.display = :none
+    end
+
+    def show
+      style.display = :block
     end
 
     def on_event(message)

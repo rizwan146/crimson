@@ -18,13 +18,11 @@ module Crimson
     def enable
       style.cursor = cursor
       on(:mousedown, method(:on_mousedown))
-      commit!
     end
 
     def disable
       style.cursor = "auto"
       un(:mousedown, method(:on_mousedown))
-      commit!
     end
 
     def on_mousedown(_data)
