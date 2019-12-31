@@ -3,6 +3,7 @@
 require 'hashie'
 require_relative 'model_change'
 require_relative 'utilities'
+require_relative 'mash'
 
 module Crimson
   class Model < SimpleDelegator
@@ -10,10 +11,10 @@ module Crimson
 
     def initialize
       @observers = {}
-      @revisions = [Hashie::Mash.new]
+      @revisions = [Mash.new]
       @revision_number = 1
       @max_number_of_revisions = 2
-      @local = Hashie::Mash.new
+      @local = Mash.new
 
       super(local)
     end
@@ -44,7 +45,7 @@ module Crimson
 
     def changes(*keys)
       keys = ( master.keys | local.keys ) if keys.empty?
-      diff = Hashie::Mash.new
+      diff = Mash.new
 
       keys.each do |k|
         v1 = master[k]

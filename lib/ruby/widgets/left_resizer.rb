@@ -15,7 +15,7 @@ module Crimson
     end
 
     def on_mousemove(data)
-      min_width = parent.style['min-width'].delete_suffix('px').to_i
+      min_width = parent.style.minWidth.delete_suffix('px').to_i
       new_width = parent.style.width.delete_suffix('px').to_i - data.movementX
       new_left = parent.style.left.delete_suffix('px').to_i + data.movementX
 

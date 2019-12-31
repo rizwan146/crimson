@@ -47,17 +47,15 @@ module Crimson
       @bottom_resizer = BottomResizer.new
       add(bottom_resizer)
 
-      self.style = {
-        "left": '0px',
-        "top": '0px',
-        "height": height,
-        "width": width,
-        "min-height": '200px',
-        "min-width": '400px',
-        "position": 'absolute',
-        "background-color": 'white',
-        "box-shadow": '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
-      }
+      style.left = '0px'
+      style.top = '0px'
+      style.height = height
+      style.width = width
+      style.minHeight = '200px'
+      style.minWidth = '400px'
+      style.position = 'absolute'
+      style.backgroundColor = 'white'
+      style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
 
       on("mousedown", method(:on_mousedown))
     end

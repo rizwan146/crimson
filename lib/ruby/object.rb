@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'tree'
-require 'hashie'
 require 'set'
 require_relative 'model'
 require_relative 'utilities'
+require_relative 'mash'
 
 module Crimson
   class Object < Model
@@ -16,12 +16,12 @@ module Crimson
       @id = :"object_#{Utilities.generate_id}"
       @tag = tag.to_sym
       @node = Tree::TreeNode.new(id, self)
-      @event_handlers = Hashie::Mash.new
+      @event_handlers = Mash.new
 
       @added_children = Set.new
       @removed_children = Set.new
 
-      self.style = {}
+      self.style = Mash.new
 
       show
     end

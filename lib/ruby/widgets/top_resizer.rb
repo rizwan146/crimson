@@ -15,7 +15,7 @@ module Crimson
     end
 
     def on_mousemove(data)
-      min_height = parent.style['min-height'].delete_suffix('px').to_i
+      min_height = parent.style.minHeight.delete_suffix('px').to_i
       new_height = parent.style.height.delete_suffix('px').to_i - data.movementY
       new_top = parent.style.top.delete_suffix('px').to_i + data.movementY
 
