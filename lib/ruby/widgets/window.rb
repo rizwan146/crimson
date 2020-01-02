@@ -49,9 +49,6 @@ module Crimson
 
       @content = Crimson::Object.new(:div)
       content.style.width = '100%'
-      content.style.display = 'flex'
-      content.style.justifyContent = 'center'
-      content.style.alignItems = 'center'
       content.style.height = "calc(100% - #{titlebar.style.height})"
       content.style.padding = 0
       content.style.margin = 0

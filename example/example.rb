@@ -26,10 +26,19 @@ password.style.height = "30px"
 
 submit = Crimson::Input.new(:submit)
 submit.value = "Login"
+submit.style.marginTop = '20px'
 submit.style.width = "50%"
 submit.style.height = "30px"
+submit.style.backgroundColor = 'rgba(46, 204, 113, 1)'
+submit.style.color = 'white'
+submit.style.border = 0
 
 form = Crimson::Form.new
+form.style.display = 'flex'
+form.style.justifyContent = 'center'
+form.style.alignItems = 'center'
+form.style.flexDirection = 'column'
+form.style.height = "100%"
 form.add(username)
 form.add(password)
 form.add(submit)
