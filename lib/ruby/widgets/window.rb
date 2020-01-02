@@ -10,7 +10,7 @@ require_relative 'bottom_resizer'
 
 module Crimson
   class Window < Crimson::Object
-    attr_reader :offset, :titlebar, :previous_dimensions
+    attr_reader :offset, :titlebar, :previous_dimensions, :content
     attr_reader :resizable, :left_resizer, :right_resizer, :top_resizer, :bottom_resizer
 
     def initialize(title, width = '800px', height = '600px')
@@ -47,6 +47,16 @@ module Crimson
       @bottom_resizer = BottomResizer.new
       add(bottom_resizer)
 
+      @content = Crimson::Object.new(:div)
+      content.style.width = '100%'
+      content.style.display = 'flex'
+      content.style.justifyContent = 'center'
+      content.style.alignItems = 'center'
+      content.style.height = "calc(100% - #{titlebar.style.height})"
+      content.style.padding = 0
+      content.style.margin = 0
+      add(content)
+
       style.left = '0px'
       style.top = '0px'
       style.height = height
@@ -57,7 +67,12 @@ module Crimson
       style.backgroundColor = 'white'
       style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
 
-      on("mousedown", method(:on_mousedown))
+      on('mousedown', method(:on_mousedown))
+    end
+
+    def content=(widget)
+      content.children.each { |child| content.remove(child) }
+      content.add(widget)
     end
 
     def on_dragstart(data)
@@ -65,7 +80,7 @@ module Crimson
       offset.left = style.left.delete_suffix('px').to_i - data.clientX
     end
 
-    def on_mousedown(data)
+    def on_mousedown(_data)
       parent.move(self, -1)
       parent.commit_tree!(:children)
     end

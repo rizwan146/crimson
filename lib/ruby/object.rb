@@ -26,6 +26,14 @@ module Crimson
       show
     end
 
+    def hidden?
+      style.display.to_sym == :none
+    end
+
+    def shown?
+      !hidden?
+    end
+
     def hide
       style.display = :none
     end
