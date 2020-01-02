@@ -19,7 +19,7 @@ module Crimson
       add(title)
 
       @hide_button = Object.new(:img)
-      hide_button.src = './icons/hide.png'
+      hide_button.src = 'crimson/icons/hide.png'
       hide_button.style.padding = '10px 20px'
       hide_button.on('mouseenter') do |_data|
         hide_button.style.backgroundColor = 'rgba(0, 0, 0, 0.6)'
@@ -32,7 +32,7 @@ module Crimson
       add(hide_button)
 
       @resize_button = Object.new(:img)
-      resize_button.src = './icons/resize.png'
+      resize_button.src = 'crimson/icons/resize.png'
       resize_button.style.padding = '8px 16px'
       resize_button.on('mouseenter') do |_data|
         resize_button.style.backgroundColor = 'rgba(0, 0, 0, 0.6)'
@@ -45,7 +45,7 @@ module Crimson
       add(resize_button)
 
       @close_button = Object.new(:img)
-      close_button.src = './icons/close.png'
+      close_button.src = 'crimson/icons/close.png'
       close_button.style.padding = '10px 20px'
       close_button.on('mouseenter') do |_data|
         close_button.style.backgroundColor = 'rgba(0, 0, 0, 0.6)'

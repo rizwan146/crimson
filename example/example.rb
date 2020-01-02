@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../lib/crimson'
-require_relative '../lib/ruby/widgets/desktop'
-require_relative '../lib/ruby/widgets/window'
-require_relative '../lib/ruby/widgets/form'
-require_relative '../lib/ruby/widgets/input'
-
+require 'crimson'
+require 'crimson/widgets/desktop'
+require 'crimson/widgets/window'
+require 'crimson/widgets/form'
+require 'crimson/widgets/input'
 
 server = Crimson::Server.new
 
