@@ -2,7 +2,7 @@ require 'sinatra/base'
 
 module Crimson
   class WebServer < Sinatra::Base
-    set :public_folder, "#{__dir__}/../../"
+    set :public_folder, "#{__dir__}/../"
 
     def initialize(template)
       super()

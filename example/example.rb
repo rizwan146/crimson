@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../crimson'
+require_relative '../lib/crimson'
 require_relative '../lib/ruby/widgets/desktop'
 require_relative '../lib/ruby/widgets/window'
 require_relative '../lib/ruby/widgets/form'
