@@ -3,12 +3,13 @@ require 'faye/websocket'
 module Crimson
   module Adapters
     class Faye < SimpleDelegator
-      def initialize(env)
-        super(Faye::WebSocket.new(env))
+      def initialize(ws)
+        @ws = ws
+        super(@ws)
       end
 
       def write(message)
-        self.send(message)
+        @ws.send(message)
       end
     end
   end

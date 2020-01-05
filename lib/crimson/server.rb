@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'async/websocket/adapters/rack'
+require_relative 'adapters/faye'
 require_relative 'client'
 require_relative 'utilities'
 
@@ -63,7 +64,7 @@ module Crimson
 
     def call_faye(env)
       if Faye::WebSocket.websocket?(env)
-        connection = Adapters::Faye.new(env)
+        connection = Crimson::Adapters::Faye.new(Faye::WebSocket.new(env))
         id = :"client_#{Utilities.generate_id}"
         client = Client.new(id, connection)
         clients[id] = client
@@ -71,7 +72,7 @@ module Crimson
         @on_connect&.call(client)
 
         connection.on :message do |event|
-          client.on_message(event.data)
+          client.on_message(JSON.parse(event.data))
         end
     
         connection.on :close do |event|
@@ -80,7 +81,7 @@ module Crimson
           connection = nil
         end
 
-        connection.rack_response
+        return connection.rack_response
       end
     end
 
