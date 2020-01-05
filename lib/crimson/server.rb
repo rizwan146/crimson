@@ -24,8 +24,8 @@ module Crimson
       File.expand_path("#{__dir__}/../html/template.html")
     end
 
-    def self.root_path
-      File.expand_path("#{__dir__}/..")
+    def self.static
+      { :urls => [""], :root => File.expand_path("#{__dir__}/.."), :index => 'html/template.html' }
     end
 
     def content(port, path = Server.template_html_path)
@@ -46,7 +46,7 @@ module Crimson
       ensure
         @on_disconnect&.call(client)
         clients.delete(connection)
-      end or [200, {}, content(env['SERVER_PORT'])]
+      end or [200, {}, "")]
     end
   end
 end
