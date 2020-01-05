@@ -46,7 +46,7 @@ module Crimson
       ensure
         @on_disconnect&.call(client)
         clients.delete(connection)
-      end or [200, {}, [content(env['SERVER_PORT'])]]
+      end or [200, {"Content-Type" => "text/html"}, [content(env['SERVER_PORT'])]]
     end
   end
 end
