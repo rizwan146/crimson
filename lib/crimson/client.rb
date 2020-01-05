@@ -9,14 +9,17 @@ module Crimson
 
     def initialize(id, connection)
       @id = id
-
       @connection = connection
-      @connection.onmessage(&method(:on_message))
-
       @notification_bus = NotificationBus.new
     end
 
-    def on_message(message, type)
+    def listen
+      while message = connection.read
+        on_message(message)
+      end
+    end
+
+    def on_message(message)
       message = Hashie::Mash.new(JSON.parse(message))
 
       begin
