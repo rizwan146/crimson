@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'rack'
 require 'async/websocket/adapters/rack'
 require_relative 'client'
 require_relative 'utilities'
