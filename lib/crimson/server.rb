@@ -24,7 +24,7 @@ module Crimson
       template = File.read(path)
       template.sub!("{PORT}", port)
 
-      template
+      [template]
     end
 
     def call(env)
