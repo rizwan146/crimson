@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require 'rack'
 require 'async/websocket/adapters/rack'
 require_relative 'client'
 require_relative 'utilities'
-
-use Rack::Static, :urls => ["#{__dir__}/.."]
 
 module Crimson
   class Server
@@ -23,7 +20,15 @@ module Crimson
       @on_disconnect = block if block_given?
     end
 
-    def content(port, path = "#{__dir__}/../html/template.html")
+    def self.template_html_path
+      "#{__dir__}/../html/template.html"
+    end
+
+    def self.root_path
+      "#{__dir__}/.."
+    end
+
+    def content(port, path = Server.template_html_path)
       template = File.read(path)
       template.sub!("{PORT}", port)
 
