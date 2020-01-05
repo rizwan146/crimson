@@ -13,16 +13,6 @@ module Crimson
       @notification_bus = NotificationBus.new
     end
 
-    def listen
-      begin
-        while message = connection.read
-          on_message(message)
-        end
-      rescue Protocol::WebSocket::ClosedError
-        
-      end
-    end
-
     def on_message(message)
       message = Hashie::Mash.new(message)
 

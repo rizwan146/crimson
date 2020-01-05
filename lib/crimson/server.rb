@@ -36,18 +36,52 @@ module Crimson
     end
 
     def call(env)
+      call_async(env) or call_faye(env) or serve_template(env)
+    end
+
+    def call_async(env)
       Async::WebSocket::Adapters::Rack.open(env, protocols: ['ws']) do |connection|
         id = :"client_#{Utilities.generate_id}"
         client = Client.new(id, connection)
         clients[connection] = client
         
         @on_connect&.call(client)
-        client.listen
+
+        begin
+          while message = connection.read
+            client.on_message(message)
+          end
+        rescue Protocol::WebSocket::ClosedError
+          
+        end
       ensure
         @on_disconnect&.call(client)
         clients.delete(connection)
         connection.close
-      end or serve_template(env)
+      end
+    end
+
+    def call_faye(env)
+      if Faye::WebSocket.websocket?(env)
+        connection = Adapters::Faye.new(env)
+        id = :"client_#{Utilities.generate_id}"
+        client = Client.new(id, connection)
+        clients[id] = client
+
+        @on_connect&.call(client)
+
+        connection.on :message do |event|
+          client.on_message(event.data)
+        end
+    
+        connection.on :close do |event|
+          @on_disconnect&.call(client)
+          clients.delete(id)
+          connection = nil
+        end
+
+        connection.rack_response
+      end
     end
 
     def serve_template(env)
