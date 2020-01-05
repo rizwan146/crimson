@@ -14,13 +14,17 @@ module Crimson
     end
 
     def listen
-      while message = connection.read
-        on_message(message)
+      begin
+        while message = connection.read
+          on_message(message)
+        end
+      rescue Protocol::WebSocket::ClosedError
+        
       end
     end
 
     def on_message(message)
-      message = Hashie::Mash.new(JSON.parse(message))
+      message = Hashie::Mash.new(message)
 
       begin
         case message.action
@@ -33,7 +37,7 @@ module Crimson
     end
 
     def write(message = {})
-      connection.send(message.to_json)
+      connection.write(message)
     end
 
     def on_commit(object, changes)

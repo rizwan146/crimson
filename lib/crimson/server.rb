@@ -46,7 +46,16 @@ module Crimson
       ensure
         @on_disconnect&.call(client)
         clients.delete(connection)
-      end or [200, {"Content-Type" => "text/html"}, content(env['SERVER_PORT'])]
+        connection.close
+      end or serve_template(env)
+    end
+
+    def serve_template(env)
+      if env['REQUEST_PATH'] != '/'
+        return Rack::Directory.new(File.expand_path("#{__dir__}/..")).call(env)
+      else
+        return [200, {"Content-Type" => "text/html"}, content(env['SERVER_PORT'])]
+      end
     end
   end
 end

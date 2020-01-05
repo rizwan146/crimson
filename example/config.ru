@@ -63,6 +63,4 @@ server.on_disconnect do |client|
   puts "#{client.id} disconnected"
 end
 
-puts Crimson::Server.static
-use Rack::Static, **Crimson::Server.static
 run server
