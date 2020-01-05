@@ -21,11 +21,11 @@ module Crimson
     end
 
     def self.template_html_path
-      "#{__dir__}/../html/template.html"
+      File.expand_path("#{__dir__}/../html/template.html")
     end
 
     def self.root_path
-      "#{__dir__}/.."
+      File.expand_path("#{__dir__}/..")
     end
 
     def content(port, path = Server.template_html_path)
