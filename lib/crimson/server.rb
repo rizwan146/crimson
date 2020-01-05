@@ -23,6 +23,8 @@ module Crimson
     def content(port, path = "#{__dir__}/../html/template.html")
       template = File.read(path)
       template.sub!("{PORT}", port)
+
+      template
     end
 
     def call(env)
@@ -31,10 +33,10 @@ module Crimson
         client = Client.new(id, connection)
         clients[connection] = client
         
-        @on_connect.call(client)
+        @on_connect&.call(client)
         client.listen
       ensure
-        @on_disconnect.call(client)
+        @on_disconnect&.call(client)
         clients.delete(connection)
       end or [200, { 'Content-Type' => 'text/html' }, content(env['SERVER_PORT'])]
     end

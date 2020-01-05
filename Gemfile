@@ -4,8 +4,5 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'hashie'
-gem 'thin'
-gem 'sinatra'
 gem 'rubytree'
-gem 'eventmachine'
-gem 'websocket-eventmachine-server'
+gem 'async-websocket'
