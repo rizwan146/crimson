@@ -25,7 +25,7 @@ module Crimson
     end
 
     def self.static
-      { :urls => [File.expand_path("#{__dir__}/..")] }
+      { :urls => [File.expand_path("#{__dir__}/.."), File.expand_path("#{__dir__}/../javascript")] }
     end
 
     def content(port, path = Server.template_html_path)
