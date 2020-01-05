@@ -4,6 +4,8 @@ require 'async/websocket/adapters/rack'
 require_relative 'client'
 require_relative 'utilities'
 
+use Rack::Static, :urls => ["#{__dir__}/.."]
+
 module Crimson
   class Server
     attr_reader :clients
