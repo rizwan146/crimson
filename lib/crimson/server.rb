@@ -38,24 +38,21 @@ module Crimson
 
     def call_async(env)
       Async::WebSocket::Adapters::Rack.open(env, protocols: ['ws']) do |connection|
-        id = :"client_#{Utilities.generate_id}"
-        client = Client.new(id, connection)
-        clients[connection] = client
-        
-        @on_connect&.call(client)
+          id = :"client_#{Utilities.generate_id}"
+          client = Client.new(id, connection)
+          clients[connection] = client
+          
+          @on_connect&.call(client)
 
         begin
           while message = connection.read
             client.on_message(message)
           end
         rescue Protocol::WebSocket::ClosedError
-          
+        ensure
+          @on_disconnect&.call(client)
+          clients.delete(connection)
         end
-
-        connection.close
-      ensure
-        @on_disconnect&.call(client)
-        clients.delete(connection)
       end
     end
 
