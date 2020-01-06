@@ -25,10 +25,6 @@ module Crimson
       File.expand_path("#{__dir__}/../html/template.html")
     end
 
-    def self.static
-      { :urls => [File.expand_path("#{__dir__}/.."), File.expand_path("#{__dir__}/../javascript")] }
-    end
-
     def content(port, path = Server.template_html_path)
       template = File.read(path)
       template.sub!("{PORT}", port)
@@ -55,10 +51,11 @@ module Crimson
         rescue Protocol::WebSocket::ClosedError
           
         end
+
+        connection.close
       ensure
         @on_disconnect&.call(client)
         clients.delete(connection)
-        connection.close
       end
     end
 

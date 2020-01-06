@@ -28,6 +28,7 @@ module Crimson
 
     def write(message = {})
       connection.write(message)
+      connection.flush
     end
 
     def on_commit(object, changes)
